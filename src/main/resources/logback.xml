@@ -1,0 +1,20 @@
+<configuration>
+
+  <appender name="STDOUT"
+    class="ch.qos.logback.core.ConsoleAppender">
+    <layout class="ch.qos.logback.classic.PatternLayout">
+      <Pattern>
+        %d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+     </Pattern>
+    </layout>
+  </appender>
+
+  <logger name="org.jclouds" level="INFO" />
+  <logger name="jclouds" level="INFO" />
+  <logger name="com.github.rnorth.blitzem" level="DEBUG" />
+
+  <root level="DEBUG">
+    <appender-ref ref="STDOUT" />
+  </root>
+
+</configuration>
