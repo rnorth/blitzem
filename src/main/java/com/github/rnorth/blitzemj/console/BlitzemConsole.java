@@ -18,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.rnorth.blitzemj.TaggedItemRegistry;
-import com.github.rnorth.blitzemj.commands.WholeEnvironmentCommand;
 import com.github.rnorth.blitzemj.commands.BaseCommand;
 import com.github.rnorth.blitzemj.commands.CommandException;
 import com.github.rnorth.blitzemj.commands.DownCommand;
@@ -26,19 +25,25 @@ import com.github.rnorth.blitzemj.commands.HelpCommand;
 import com.github.rnorth.blitzemj.commands.PerItemCommand;
 import com.github.rnorth.blitzemj.commands.StatusCommand;
 import com.github.rnorth.blitzemj.commands.UpCommand;
+import com.github.rnorth.blitzemj.commands.WholeEnvironmentCommand;
 import com.github.rnorth.blitzemj.model.Defaults;
 import com.github.rnorth.blitzemj.model.Node;
-import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.io.Resources;
 import com.google.inject.Module;
 
+/**
+ * Main Blitzem console entry point.
+ * 
+ * @author Richard North <rich.north@gmail.com>
+ * 
+ */
 public class BlitzemConsole {
 
 	private static final Logger CONSOLE_LOG = LoggerFactory.getLogger("blitzem");
 
 	/**
 	 * @param args
+	 *            command line args.
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
@@ -46,7 +51,6 @@ public class BlitzemConsole {
 		BaseCommand command = (BaseCommand) new CommandArgsParser(UpCommand.class, DownCommand.class, StatusCommand.class).useDefault(
 				HelpCommand.class).parse(args);
 
-		Defaults.load();
 		loadEnvironmentFile(command);
 
 		ComputeServiceContext context = loadContext();
@@ -76,6 +80,14 @@ public class BlitzemConsole {
 
 	}
 
+	/**
+	 * Load cloud provider config files, connect, and instantiate a
+	 * {@link ComputeServiceContext} for further work to be carried out on.
+	 * 
+	 * @return
+	 * @throws IOException
+	 * @throws FileNotFoundException
+	 */
 	private static ComputeServiceContext loadContext() throws IOException, FileNotFoundException {
 		File cloudConfigFile = new File(System.getProperty("user.home") + "/.blitzem/config.properties");
 		if (!cloudConfigFile.exists() && !cloudConfigFile.isFile()) {
@@ -99,6 +111,14 @@ public class BlitzemConsole {
 		return context;
 	}
 
+	/**
+	 * Load an environment spec file (expected to be a groovy file, referenced
+	 * in the command).
+	 * 
+	 * Execution of the spec file will update the singleton {@link TaggedItemRegistry}.
+	 * 
+	 * @param command
+	 */
 	private static void loadEnvironmentFile(BaseCommand command) {
 
 		File sourceFile = new File(command.getSource());

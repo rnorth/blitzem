@@ -1,4 +1,0 @@
-#!/bin/sh
-
-BLITZEM_HOME=$PWD
-java -cp $BLITZEM_HOME com.github.rnorth.blitzemj.console.BlitzemConsole

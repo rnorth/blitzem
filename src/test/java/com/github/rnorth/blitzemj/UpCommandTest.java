@@ -1,39 +1,39 @@
 package com.github.rnorth.blitzemj;
 
-import java.lang.reflect.Field;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyDouble;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
 import java.util.Set;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.jclouds.compute.ComputeService;
-import org.jclouds.compute.RunNodesException;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.OsFamily;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.domain.TemplateBuilder;
-import org.jclouds.compute.domain.internal.NodeMetadataImpl;
-import org.jclouds.compute.domain.internal.TemplateBuilderImpl;
-import org.jclouds.compute.options.RunScriptOptions;
 import org.jclouds.compute.options.TemplateOptions;
-import org.jclouds.scriptbuilder.domain.Statement;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import com.github.rnorth.blitzemj.commands.CommandException;
 import com.github.rnorth.blitzemj.commands.UpCommand;
-import com.github.rnorth.blitzemj.model.Defaults;
 import com.github.rnorth.blitzemj.model.Node;
-import com.github.rnorth.blitzemj.model.Provisioning;
 import com.github.rnorth.blitzemj.model.ScriptExecution;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 public class UpCommandTest {
 
@@ -45,7 +45,6 @@ public class UpCommandTest {
 	@Before
 	public void setup() {
 		initMocks(this);
-		Defaults.load();
 
 		when(mockComputeService.templateBuilder()).thenReturn(mockTemplateBuilder);
 		when(mockTemplateBuilder.minRam(anyInt())).thenReturn(mockTemplateBuilder);

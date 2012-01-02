@@ -1,16 +1,25 @@
-/**
- * 
- */
 package com.github.rnorth.blitzemj.commands;
 
 import org.jclouds.compute.ComputeService;
 
+import com.github.rnorth.blitzemj.model.Node;
+
 /**
- * @author richardnorth
- *
+ * A specialization of {@link Command} which should be executed for the
+ * environment as a whole and not on every {@link Node} separately.
+ * 
+ * @author Richard North <rich.north@gmail.com>
+ * 
  */
 public interface WholeEnvironmentCommand extends Command {
-
-	void execute(ComputeService computeService);
+	
+	/**
+	 * Execute this command.
+	 * 
+	 * @param computeService
+	 *            to carry out the command with
+	 * @throws CommandException
+	 */
+	void execute(ComputeService computeService) throws CommandException;
 
 }

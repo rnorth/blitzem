@@ -9,10 +9,19 @@ import org.slf4j.LoggerFactory;
 
 import com.github.rnorth.blitzemj.model.Node;
 
+/**
+ * A command to bring down (destroy) a {@link Node}.
+ * 
+ * @author Richard North <rich.north@gmail.com>
+ *
+ */
 public class DownCommand extends BaseCommand implements PerItemCommand {
 
 	private static final Logger CONSOLE_LOG = LoggerFactory.getLogger("blitzem");
 
+	/** 
+	 * {@inheritDoc}
+	 */
 	public void execute(final Node node, ComputeService computeService) throws CommandException {
 
 		Set<? extends NodeMetadata> existingNodes = findExistingNodesMatching(node, computeService);

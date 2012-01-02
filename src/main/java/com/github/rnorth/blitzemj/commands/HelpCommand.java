@@ -2,13 +2,17 @@ package com.github.rnorth.blitzemj.commands;
 
 import org.jclouds.compute.ComputeService;
 
-import com.github.rnorth.blitzemj.model.Node;
+/**
+ * A command to display help for using the Blitzem application.
+ * 
+ * @author Richard North <rich.north@gmail.com>
+ *
+ */
+public class HelpCommand extends BaseCommand implements WholeEnvironmentCommand {
 
-public class HelpCommand extends BaseCommand implements PerItemCommand {
-
-	public void execute(Node node, ComputeService computeService) throws CommandException {
+	public void execute(ComputeService computeService) {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 }

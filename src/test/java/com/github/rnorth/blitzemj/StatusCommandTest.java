@@ -33,7 +33,6 @@ public class StatusCommandTest {
 	@Before
 	public void setup() {
 		initMocks(this);
-		Defaults.load();
 	}
 	
 	@Test

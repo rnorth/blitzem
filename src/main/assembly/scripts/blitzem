@@ -1,0 +1,10 @@
+#!/bin/sh
+
+BLITZEM_HOME=`dirname "$0"`/..
+
+if ! `which -s java`; then
+    echo "Could not locate a system Java executable in \$PATH. Please ensure that Java is installed and try again.";
+    exit 1;
+fi
+
+java -jar $BLITZEM_HOME/lib/${project.artifactId}-${project.version}.jar $@

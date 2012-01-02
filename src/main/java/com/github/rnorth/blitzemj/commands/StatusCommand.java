@@ -1,6 +1,5 @@
 package com.github.rnorth.blitzemj.commands;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -13,27 +12,49 @@ import com.github.rnorth.blitzemj.model.Node;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
+/**
+ * Command to display status of the environment in tabular format.
+ * 
+ * @author Richard North <rich.north@gmail.com>
+ * 
+ */
 public class StatusCommand extends BaseCommand implements WholeEnvironmentCommand {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void execute(ComputeService computeService) {
 
 		List<List<String>> table = Lists.newArrayList();
-		table.add(Arrays.asList(new String[] { "Node name", "Status", "IP Address", "Tags"}));
-		
+		table.add(Arrays.asList(new String[] { "Node name", "Status", "IP Address", "Tags" }));
+
 		for (Node node : TaggedItemRegistry.getInstance().findMatching(null, Node.class)) {
 			Set<? extends NodeMetadata> liveNodes = findExistingNodesMatching(node, computeService);
 			if (liveNodes.size() > 0) {
 				for (NodeMetadata liveNode : liveNodes) {
-					table.add(Arrays.asList(new String[] { node.getName(), "UP", liveNode.getPublicAddresses().toString(), node.getTags().toString()}));
+					table.add(Arrays.asList(new String[] { node.getName(), "UP", liveNode.getPublicAddresses().toString(),
+							node.getTags().toString() }));
 				}
 			} else {
-				table.add(Arrays.asList(new String[] { node.getName(), "DOWN", "n/a", node.getTags().toString()}));
+				table.add(Arrays.asList(new String[] { node.getName(), "DOWN", "n/a", node.getTags().toString() }));
 			}
 		}
 		printTable(table, true);
 	}
 
-	public static void printTable(List<List<String>> table, boolean headerUnderline) {
+	/**
+	 * Print out information in tabular format. Adapted from {@link http
+	 * ://stackoverflow
+	 * .com/questions/275338/java-print-a-2d-string-array-as-a-right
+	 * -justified-table/275438#275438}
+	 * 
+	 * @param table
+	 *            a list of table rows, each of which should be a list of
+	 *            strings (for each entry in the row).
+	 * @param headerUnderline
+	 *            whether to underline the header.
+	 */
+	private void printTable(List<List<String>> table, boolean headerUnderline) {
 		// Find out what the maximum number of columns is in any row
 		int maxColumns = 0;
 		for (List<String> row : table) {
@@ -47,7 +68,7 @@ public class StatusCommand extends BaseCommand implements WholeEnvironmentComman
 				lengths[j] = Math.max(row.get(j).length(), lengths[j]);
 			}
 		}
-		
+
 		if (headerUnderline) {
 			List<String> underlineRow = Lists.newArrayList();
 			for (int j = 0; j < maxColumns; j++) {

@@ -1,6 +1,12 @@
 package com.github.rnorth.blitzemj.model;
 
 
+/**
+ * Models a server sizing definition.
+ * 
+ * @author Richard North <rich.north@gmail.com>
+ *
+ */
 public class Size {
 
 	public static final Size DEFAULT = new Size();
@@ -26,6 +32,9 @@ public class Size {
 		return new Size(minRam, minCores);
 	}
 
+	/** 
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
@@ -33,11 +42,32 @@ public class Size {
 		return builder.toString();
 	}
 
+	/**
+	 * @return the minRam
+	 */
 	public int getMinRam() {
 		return minRam;
 	}
 
+	/**
+	 * @param minRam the minRam to set
+	 */
+	public void setMinRam(int minRam) {
+		this.minRam = minRam;
+	}
+
+	/**
+	 * @return the minCores
+	 */
 	public double getMinCores() {
 		return minCores;
 	}
+
+	/**
+	 * @param minCores the minCores to set
+	 */
+	public void setMinCores(double minCores) {
+		this.minCores = minCores;
+	}
+
 }

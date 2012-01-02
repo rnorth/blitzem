@@ -1,13 +1,12 @@
 package com.github.rnorth.blitzemj.commands;
 
-import static org.jclouds.compute.options.TemplateOptions.Builder.*;
+import static org.jclouds.compute.options.TemplateOptions.Builder.authorizePublicKey;
 
 import java.io.File;
 import java.util.Set;
 
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.RunNodesException;
-import org.jclouds.compute.callables.RunScriptOnNodeUsingSsh;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.OsFamily;
 import org.jclouds.compute.domain.Template;
@@ -20,10 +19,19 @@ import com.github.rnorth.blitzemj.model.Node;
 import com.github.rnorth.blitzemj.model.Provisioning;
 import com.google.common.collect.Sets;
 
+/**
+ * Command to create a {@link Node} if it does not already exist.
+ * 
+ * @author Richard North <rich.north@gmail.com>
+ *
+ */
 public class UpCommand extends BaseCommand implements PerItemCommand {
 
 	private static final Logger CONSOLE_LOG = LoggerFactory.getLogger("blitzem");
 
+	/** 
+	 * {@inheritDoc}
+	 */
 	public void execute(final Node node, ComputeService computeService) throws CommandException {
 
 		Set<? extends NodeMetadata> existingNodes = findExistingNodesMatching(node, computeService);

@@ -33,7 +33,6 @@ public class DownCommandTest {
 	@Before
 	public void setup() {
 		initMocks(this);
-		Defaults.load();
 	}
 	
 	@Test
