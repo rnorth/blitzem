@@ -1,6 +1,7 @@
 package com.github.rnorth.blitzemj.commands;
 
 import org.jclouds.compute.ComputeService;
+import org.jclouds.loadbalancer.LoadBalancerService;
 
 import com.github.rnorth.blitzemj.model.Node;
 
@@ -18,8 +19,10 @@ public interface WholeEnvironmentCommand extends Command {
 	 * 
 	 * @param computeService
 	 *            to carry out the command with
+     * @param loadBalancerService
+	 *            to carry out the command with
 	 * @throws CommandException
 	 */
-	void execute(ComputeService computeService) throws CommandException;
+	void execute(ComputeService computeService, LoadBalancerService loadBalancerService) throws CommandException;
 
 }

@@ -8,17 +8,27 @@
 		<dependency>
 			<groupId>org.jclouds</groupId>
 			<artifactId>jclouds-allcompute</artifactId>
-			<version>1.1.1</version>
+			<version>${jclouds.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.jclouds</groupId>
-			<artifactId>jclouds-allblobstore</artifactId>
-			<version>1.1.1</version>
-		</dependency>
+            <groupId>org.jclouds</groupId>
+            <artifactId>jclouds-allloadbalancer</artifactId>
+            <version>${jclouds.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jclouds.provider</groupId>
+            <artifactId>cloudloadbalancers-uk</artifactId>
+            <version>${jclouds.version}</version>
+        </dependency>
 		<dependency>
 			<groupId>org.jclouds.driver</groupId>
 			<artifactId>jclouds-jsch</artifactId>
-			<version>1.1.1</version>
+			<version>${jclouds.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jclouds.driver</groupId>
+			<artifactId>jclouds-slf4j</artifactId>
+			<version>${jclouds.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
@@ -42,15 +52,11 @@
 			<artifactId>logback-classic</artifactId>
 			<version>1.0.0</version>
 		</dependency>
-		<dependency>
-			<groupId>org.jclouds.driver</groupId>
-			<artifactId>jclouds-slf4j</artifactId>
-			<version>1.1.1</version>
-		</dependency>
 	</dependencies>
 	
 	<properties>
 	   <appClass>com.github.rnorth.blitzemj.console.BlitzemConsole</appClass>
+	   <jclouds.version>1.3.0-rc-1</jclouds.version>
 	</properties>
 
 	<build>
@@ -96,13 +102,4 @@
             </plugin>
         </plugins>
     </build>
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>com.google.guava</groupId>
-				<artifactId>guava</artifactId>
-				<version>r09</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 </project>

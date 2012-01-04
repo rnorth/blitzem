@@ -11,7 +11,7 @@ import com.github.rnorth.blitzemj.model.Node;
  * @author Richard North <rich.north@gmail.com>
  * 
  */
-public interface PerItemCommand extends Command {
+public interface PerNodeCommand extends Command {
 
 	/**
 	 * Execute this command.

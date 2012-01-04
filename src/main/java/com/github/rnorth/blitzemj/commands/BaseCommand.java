@@ -5,9 +5,14 @@ import java.util.Set;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.ComputeMetadata;
 import org.jclouds.compute.domain.NodeMetadata;
+import org.jclouds.loadbalancer.LoadBalancerService;
+import org.jclouds.loadbalancer.domain.LoadBalancerMetadata;
 
+import com.github.rnorth.blitzemj.model.LoadBalancer;
 import com.github.rnorth.blitzemj.model.Node;
+import com.google.common.base.Functions;
 import com.google.common.base.Predicate;
+import com.google.common.collect.Sets;
 
 /**
  * Base implementation for Command object classes, providing support for common
@@ -20,6 +25,7 @@ public abstract class BaseCommand implements Command {
 
 	private String noun;
 	private Boolean verbose = false;
+	private Boolean superVerbose = false;
 	private String source = "./environment.groovy";
 
 	/**
@@ -50,6 +56,23 @@ public abstract class BaseCommand implements Command {
 
 		});
 		return existingNodes;
+	}
+	
+
+	protected Set<LoadBalancerMetadata> findExistingLoadBalancersMatching(LoadBalancer loadBalancer,
+			LoadBalancerService loadBalancerService) {
+		
+		Set<? extends LoadBalancerMetadata> loadBalancers = loadBalancerService.listLoadBalancers();
+		Set<LoadBalancerMetadata> matchingLoadBalancers = Sets.newHashSet();
+		
+		for (LoadBalancerMetadata lbInstance : loadBalancers) {
+			final String name = lbInstance.getName();
+			if (name.equals(loadBalancer.getName())) {
+				matchingLoadBalancers.add(lbInstance);
+			}
+		}
+		
+		return matchingLoadBalancers;
 	}
 
 	/** 
@@ -92,5 +115,19 @@ public abstract class BaseCommand implements Command {
 	 */
 	public void setSource(String source) {
 		this.source = source;
+	}
+
+	/**
+	 * @return the superVerbose
+	 */
+	public Boolean isSuperVerbose() {
+		return superVerbose;
+	}
+
+	/**
+	 * @param superVerbose the superVerbose to set
+	 */
+	public void setSuperVerbose(Boolean superVerbose) {
+		this.superVerbose = superVerbose;
 	}
 }

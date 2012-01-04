@@ -2,19 +2,31 @@
 
   <appender name="STDOUT"
     class="ch.qos.logback.core.ConsoleAppender">
-    <layout class="ch.qos.logback.classic.PatternLayout">
-      <Pattern>
-        %d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
-     </Pattern>
-    </layout>
+    <encoder>
+      <pattern>
+        %d{HH:mm:ss.SSS} blitzem - %msg%n
+     </pattern>
+    </encoder>
+  </appender>
+  
+  <appender name="DIAGNOSTIC"
+    class="ch.qos.logback.core.FileAppender">
+    <file>blitzem.log</file>
+    <append>true</append>
+    <encoder>
+      <pattern>
+        %d{HH:mm:ss.SSS} [%thread] %-5level %logger{30}:%L - %msg%n
+     </pattern>
+    </encoder>
   </appender>
 
-  <logger name="org.jclouds" level="INFO" />
-  <logger name="jclouds" level="INFO" />
-  <logger name="com.github.rnorth.blitzem" level="DEBUG" />
+  <logger name="org.jclouds" level="WARN" />
+  <logger name="jclouds" level="ERROR" />
+  <logger name="blitzem" level="DEBUG" />
 
-  <root level="DEBUG">
+  <root level="INFO">
     <appender-ref ref="STDOUT" />
+    <appender-ref ref="DIAGNOSTIC" />
   </root>
 
 </configuration>

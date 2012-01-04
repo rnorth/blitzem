@@ -19,7 +19,7 @@ public class Node implements TaggedAndNamedItem {
 	private List<String> tags = Lists.newArrayList();
 	private Size size = Size.DEFAULT;
 	private Os os = Os.DEFAULT;
-	private List<? extends Provisioning> provisioning = Provisioning.DEFAULT;
+	private List<? extends Provisioning> provisioning = (List<? extends Provisioning>) Defaults.DEFAULTS.get("provisioning");
 
 	public Node() {
 		TaggedItemRegistry.getInstance().add(this);
