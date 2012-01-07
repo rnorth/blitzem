@@ -47,8 +47,10 @@ import com.google.common.collect.Sets;
 
 public class LoadBalancerUpCommandTest {
 
-	@Mock LoadBalancerService mockLoadBalancerService;
-	@Mock ComputeService mockComputeService;
+	@Mock
+    private LoadBalancerService mockLoadBalancerService;
+	@Mock
+    private ComputeService mockComputeService;
 	
 	@Before
 	public void setup() {

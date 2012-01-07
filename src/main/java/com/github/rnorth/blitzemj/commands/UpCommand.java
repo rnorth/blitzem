@@ -38,8 +38,7 @@ public class UpCommand extends BaseCommand implements PerNodeCommand, PerLoadBal
 				publicAddresses.addAll(thisExistingNode.getPublicAddresses());
 			}
 			CONSOLE_LOG.info("Node already exists - IP Address(es): {}", publicAddresses);
-			return;
-		} else {
+        } else {
 			node.preUp(computeService);
 			node.up(computeService);
 			node.postUp(computeService);
@@ -59,8 +58,7 @@ public class UpCommand extends BaseCommand implements PerNodeCommand, PerLoadBal
 				publicAddresses.addAll(thisExistingLB.getAddresses());
 			}
 			CONSOLE_LOG.info("Load Balancer already exists - IP Address(es): {}", publicAddresses);
-			return;
-		} else {
+        } else {
 			Iterable<Node> associatedNodes = TaggedItemRegistry.getInstance().findMatching(loadBalancer.getAppliesToTag(), Node.class);
 			
 			loadBalancer.preUp(loadBalancerService, computeService, associatedNodes);

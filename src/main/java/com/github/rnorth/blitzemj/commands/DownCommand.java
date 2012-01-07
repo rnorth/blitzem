@@ -31,8 +31,7 @@ public class DownCommand extends BaseCommand implements PerNodeCommand, PerLoadB
 
 		if (existingNodes.isEmpty()) {
 			CONSOLE_LOG.info("Node does not exist");
-			return;
-		} else {
+        } else {
 			node.preDown(computeService);
 			node.down(computeService);
 			node.postDown(computeService);
@@ -49,8 +48,7 @@ public class DownCommand extends BaseCommand implements PerNodeCommand, PerLoadB
 
 		if (existingLBs.isEmpty()) {
 			CONSOLE_LOG.info("Load balancer does not exist");
-			return;
-		} else {
+        } else {
 			loadBalancer.preDown(loadBalancerService, computeService);
 			loadBalancer.down(loadBalancerService, computeService);
 			loadBalancer.postDown(loadBalancerService, computeService);

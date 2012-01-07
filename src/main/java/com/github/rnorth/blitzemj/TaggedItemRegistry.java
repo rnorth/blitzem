@@ -16,7 +16,7 @@ import com.google.common.collect.Lists;
 public class TaggedItemRegistry {
 
 	private static TaggedItemRegistry instance;
-	private List<TaggedAndNamedItem> items = Lists.newArrayList();
+	private final List<TaggedAndNamedItem> items = Lists.newArrayList();
 
 	private TaggedItemRegistry() {
 	}

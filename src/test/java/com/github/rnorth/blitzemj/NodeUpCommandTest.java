@@ -38,9 +38,9 @@ import com.google.common.collect.Sets;
 public class NodeUpCommandTest {
 
 	@Mock
-	ComputeService mockComputeService;
+    private ComputeService mockComputeService;
 	@Mock
-	TemplateBuilder mockTemplateBuilder;
+    private TemplateBuilder mockTemplateBuilder;
 
 	@Before
 	public void setup() {
@@ -108,12 +108,11 @@ public class NodeUpCommandTest {
 		verify(mockTemplateBuilder, times(1)).options(argThat(new IsScriptExecution("hostname")));
 	}
 
-	protected Node dummyNode(String nodeName, String[] tags) {
-		Node node = new Node(nodeName, tags);
-		return node;
+	Node dummyNode(String nodeName, String[] tags) {
+        return new Node(nodeName, tags);
 	}
 
-	public class IsPublicSshKeyUpload extends BaseMatcher<TemplateOptions> implements Matcher<TemplateOptions> {
+	private class IsPublicSshKeyUpload extends BaseMatcher<TemplateOptions> implements Matcher<TemplateOptions> {
 
 		public void describeTo(Description description) {
 			// TODO Auto-generated method stub

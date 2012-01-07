@@ -33,8 +33,10 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class StatusCommandTest {
 
-	@Mock ComputeService mockComputeService;
-	@Mock LoadBalancerService mockLoadBalancerService;
+	@Mock
+    private ComputeService mockComputeService;
+	@Mock
+    private LoadBalancerService mockLoadBalancerService;
 	
 	@Before
 	public void setup() {
@@ -74,8 +76,7 @@ public class StatusCommandTest {
 		return lb;
 	}
 
-	protected Node dummyNode(String nodeName, String[] tags) {
-		Node node = new Node(nodeName, tags);
-		return node;
+	Node dummyNode(String nodeName, String[] tags) {
+        return new Node(nodeName, tags);
 	}
 }

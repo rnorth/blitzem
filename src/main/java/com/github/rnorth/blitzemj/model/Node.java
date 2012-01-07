@@ -189,22 +189,21 @@ public class Node implements TaggedAndNamedItem {
 	 *         one, but more could be found and should be handled.
 	 */
 	public static Set<? extends NodeMetadata> findExistingNodesMatching(final Node node, ComputeService computeService) {
-		Set<? extends NodeMetadata> existingNodes = computeService.listNodesDetailsMatching(new Predicate<ComputeMetadata>() {
+        return computeService.listNodesDetailsMatching(new Predicate<ComputeMetadata>() {
 
-			public boolean apply(ComputeMetadata arg0) {
-				final String name = arg0.getName();
+            public boolean apply(ComputeMetadata arg0) {
+                final String name = arg0.getName();
 
-				if (name.contains("-")) {
-					String trimmedName = name.substring(0, name.lastIndexOf('-'));
-					return trimmedName.equals(node.getName());
-				} else {
-					return name.equals(node.getName());
-				}
+                if (name.contains("-")) {
+                    String trimmedName = name.substring(0, name.lastIndexOf('-'));
+                    return trimmedName.equals(node.getName());
+                } else {
+                    return name.equals(node.getName());
+                }
 
-			}
+            }
 
-		});
-		return existingNodes;
+        });
 	}
 
 	public void preDown(ComputeService computeService) {

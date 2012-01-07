@@ -28,7 +28,8 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class DownCommandTest {
 
-	@Mock ComputeService mockComputeService;
+	@Mock
+    private ComputeService mockComputeService;
 	
 	@Before
 	public void setup() {
@@ -63,8 +64,7 @@ public class DownCommandTest {
 		verify(mockComputeService, times(1)).destroyNode(eq("nodeID"));
 	}
 	
-	protected Node dummyNode(String nodeName, String[] tags) {
-		Node node = new Node(nodeName, tags);
-		return node;
+	Node dummyNode(String nodeName, String[] tags) {
+        return new Node(nodeName, tags);
 	}
 }

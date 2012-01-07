@@ -36,7 +36,7 @@ public class StatusCommand extends BaseCommand implements WholeEnvironmentComman
 		CONSOLE_LOG.info("Fetching status of nodes and load balancers");
 
 		List<List<String>> table = Lists.newArrayList();
-		table.add(Arrays.asList(new String[] { "Node name", "Status", "IP Address", "Tags", "Location" }));
+		table.add(Arrays.asList("Node name", "Status", "IP Address", "Tags", "Location"));
 
 		for (Node node : TaggedItemRegistry.getInstance().findMatching(null, Node.class)) {
 			Set<? extends NodeMetadata> liveNodes = Node.findExistingNodesMatching(node, computeService);
@@ -55,7 +55,7 @@ public class StatusCommand extends BaseCommand implements WholeEnvironmentComman
 		printTable(table, true);
 		
 		table = Lists.newArrayList();
-		table.add(Arrays.asList(new String[] { "LB name", "Status", "IP Address", "Tags", "Applies to nodes tagged", "Type", "Location" }));
+		table.add(Arrays.asList("LB name", "Status", "IP Address", "Tags", "Applies to nodes tagged", "Type", "Location"));
 		for (LoadBalancer loadBalancer : TaggedItemRegistry.getInstance().findMatching(null, LoadBalancer.class)) {
 			Set<LoadBalancerMetadata> liveLBs = LoadBalancer.findExistingLoadBalancersMatching(loadBalancer, loadBalancerService);
 			List row = null;

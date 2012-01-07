@@ -128,14 +128,24 @@ public class BlitzemConsole {
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
-	private static void loadContext() throws IOException, FileNotFoundException {
+	private static void loadContext() throws IOException {
 		File cloudConfigFile = new File(System.getProperty("user.home") + "/.blitzem/config.properties");
 		if (!cloudConfigFile.exists() && !cloudConfigFile.isFile()) {
 			System.err.println("Could not find required cloud configuration properties file - expected at: " + cloudConfigFile);
 			throw new RuntimeException();
 		}
+
 		Properties cloudConfigProperties = new Properties();
-		cloudConfigProperties.load(new FileInputStream(cloudConfigFile));
+        FileInputStream fileInputStream = null;
+        try {
+            fileInputStream = new FileInputStream(cloudConfigFile);
+            cloudConfigProperties.load(fileInputStream);
+        } finally {
+            if (fileInputStream!=null) {
+                fileInputStream.close();
+            }
+        }
+
 		String cloudComputeProvider = cloudConfigProperties.getProperty("compute-provider");
 		String cloudComputeAccessKeyId = cloudConfigProperties.getProperty("compute-accesskeyid");
 		String cloudComputeSecretKey = cloudConfigProperties.getProperty("compute-secretkey");
