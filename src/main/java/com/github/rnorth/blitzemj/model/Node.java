@@ -1,6 +1,18 @@
 package com.github.rnorth.blitzemj.model;
 
-import static org.jclouds.compute.options.TemplateOptions.Builder.authorizePublicKey;
+import com.github.rnorth.blitzemj.TaggedAndNamedItem;
+import com.github.rnorth.blitzemj.TaggedItemRegistry;
+import com.github.rnorth.blitzemj.commands.CommandException;
+import com.google.common.base.Charsets;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.common.io.Files;
+import org.jclouds.compute.ComputeService;
+import org.jclouds.compute.RunNodesException;
+import org.jclouds.compute.domain.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,23 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import org.jclouds.compute.ComputeService;
-import org.jclouds.compute.RunNodesException;
-import org.jclouds.compute.domain.ComputeMetadata;
-import org.jclouds.compute.domain.NodeMetadata;
-import org.jclouds.compute.domain.OsFamily;
-import org.jclouds.compute.domain.Template;
-import org.jclouds.compute.domain.TemplateBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.github.rnorth.blitzemj.TaggedAndNamedItem;
-import com.github.rnorth.blitzemj.TaggedItemRegistry;
-import com.github.rnorth.blitzemj.commands.CommandException;
-import com.google.common.base.Charsets;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Lists;
-import com.google.common.io.Files;
+import static org.jclouds.compute.options.TemplateOptions.Builder.authorizePublicKey;
 
 /**
  * Model class for a server node.
@@ -71,7 +67,36 @@ public class Node implements TaggedAndNamedItem {
 		return name;
 	}
 
-	/**
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<String> getNotificationSubjects() {
+        return Sets.newHashSet();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void notifyIsUp(TaggedAndNamedItem itemWhichIsUp, ExecutionContext executionContext) {
+        // Don't care
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void notifyIsGoingDown(TaggedAndNamedItem itemWhichIsGoingDown, ExecutionContext executionContext) {
+        // Don't care
+    }
+
+    @Override
+    public boolean isUp(ExecutionContext executionContext) {
+        return ! Node.findExistingNodesMatching(this, executionContext.getComputeService()).isEmpty();
+    }
+
+    /**
 	 * @param name the name to set
 	 */
 	public void setName(String name) {
@@ -134,13 +159,16 @@ public class Node implements TaggedAndNamedItem {
 		this.provisioning = provisioning;
 	}
 
-	public void preUp(ComputeService computeService) {
+	public void preUp(ExecutionContext executionContext) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	public void up(ComputeService computeService) throws CommandException {
-		final TemplateBuilder templateBuilder = computeService
+	public void up(ExecutionContext executionContext) throws CommandException {
+
+        ComputeService computeService = executionContext.getComputeService();
+
+        final TemplateBuilder templateBuilder = computeService
 				.templateBuilder();
 		try {
 			templateBuilder
@@ -172,15 +200,18 @@ public class Node implements TaggedAndNamedItem {
 		}
 	}
 
-	public void postUp(ComputeService computeService) {
-		// TODO Auto-generated method stub
-		
+    public void postUp(ExecutionContext executionContext) {
+        Set<LoadBalancer> lbsToNotify = findLoadBalancersToNotifyOfChange();
+
+        for (LoadBalancer lb : lbsToNotify) {
+            lb.notifyIsUp(this, executionContext);
+        }
 	}
 
 	/**
 	 * Find an existing live node ({@link NodeMetadata}) which matches 1:1 with
 	 * a modelled {@link Node} in the local environment spec.
-	 * 
+	 *
 	 * @param node
 	 *            the modelled Node
 	 * @param computeService
@@ -206,15 +237,20 @@ public class Node implements TaggedAndNamedItem {
         });
 	}
 
-	public void preDown(ComputeService computeService) {
-		// TODO Auto-generated method stub
-		
-	}
+    public void preDown(ExecutionContext executionContext) {
+        Set<LoadBalancer> lbsToNotify = findLoadBalancersToNotifyOfChange();
 
-	public void down(ComputeService computeService) {
+        for (LoadBalancer lb : lbsToNotify) {
+            lb.notifyIsGoingDown(this, executionContext);
+        }
+    }
 
-		Set<? extends NodeMetadata> existingNodes = Node.findExistingNodesMatching(this, computeService);
-		
+	public void down(ExecutionContext executionContext) {
+
+        ComputeService computeService = executionContext.getComputeService();
+
+        Set<? extends NodeMetadata> existingNodes = Node.findExistingNodesMatching(this, computeService);
+
 		for (NodeMetadata existingNode : existingNodes) {
 			CONSOLE_LOG.info("Bringing down node {}", existingNode.getName());
 			computeService.destroyNode(existingNode.getId());
@@ -222,10 +258,19 @@ public class Node implements TaggedAndNamedItem {
 		}
 	}
 
-	public void postDown(ComputeService computeService) {
+	public void postDown(ExecutionContext executionContext) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
+    private Set<LoadBalancer> findLoadBalancersToNotifyOfChange() {
+        Set<LoadBalancer> lbsToNotify = Sets.newHashSet();
+        lbsToNotify.addAll( TaggedItemRegistry.getInstance().findReceivesNotificationsFor(this.getName(), LoadBalancer.class) );
+        for (String tag : this.getTags()) {
+            lbsToNotify.addAll( TaggedItemRegistry.getInstance().findReceivesNotificationsFor(tag, LoadBalancer.class) );
+        }
+        return lbsToNotify;
+    }
+
 
 }

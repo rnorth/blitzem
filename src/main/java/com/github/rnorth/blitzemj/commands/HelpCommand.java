@@ -1,7 +1,6 @@
 package com.github.rnorth.blitzemj.commands;
 
-import org.jclouds.compute.ComputeService;
-import org.jclouds.loadbalancer.LoadBalancerService;
+import com.github.rnorth.blitzemj.model.ExecutionContext;
 
 /**
  * A command to display help for using the Blitzem application.
@@ -11,7 +10,7 @@ import org.jclouds.loadbalancer.LoadBalancerService;
  */
 public class HelpCommand extends BaseCommand implements WholeEnvironmentCommand {
 
-	public void execute(ComputeService computeService, LoadBalancerService loadBalancerService) throws CommandException {
+	public void execute(ExecutionContext executionContext) throws CommandException {
 		// TODO Auto-generated method stub
 		
 	}

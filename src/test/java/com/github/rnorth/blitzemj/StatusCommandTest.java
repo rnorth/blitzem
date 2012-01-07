@@ -1,16 +1,14 @@
 package com.github.rnorth.blitzemj;
 
-import java.util.Set;
-
+import com.github.rnorth.blitzemj.commands.StatusCommand;
+import com.github.rnorth.blitzemj.model.ExecutionContext;
+import com.github.rnorth.blitzemj.model.LoadBalancer;
+import com.github.rnorth.blitzemj.model.Node;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.jclouds.compute.ComputeService;
-import org.jclouds.compute.RunNodesException;
 import org.jclouds.compute.domain.NodeMetadata;
-import org.jclouds.compute.domain.OsFamily;
-import org.jclouds.compute.domain.Template;
-import org.jclouds.compute.domain.TemplateBuilder;
-import org.jclouds.compute.domain.internal.NodeMetadataImpl;
-import org.jclouds.compute.domain.internal.TemplateBuilderImpl;
-import org.jclouds.compute.options.TemplateOptions;
 import org.jclouds.domain.Location;
 import org.jclouds.loadbalancer.LoadBalancerService;
 import org.jclouds.loadbalancer.domain.LoadBalancerMetadata;
@@ -18,14 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import com.github.rnorth.blitzemj.commands.StatusCommand;
-import com.github.rnorth.blitzemj.commands.UpCommand;
-import com.github.rnorth.blitzemj.model.Defaults;
-import com.github.rnorth.blitzemj.model.LoadBalancer;
-import com.github.rnorth.blitzemj.model.Node;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import java.util.Set;
 
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -65,7 +56,7 @@ public class StatusCommandTest {
 		final Set existingLoadBalancerMetadataSet = Sets.newHashSet(mockLBMetadata);
 		when(mockLoadBalancerService.listLoadBalancers()).thenReturn(existingLoadBalancerMetadataSet);
 		
-		new StatusCommand().execute(mockComputeService, mockLoadBalancerService);
+		new StatusCommand().execute(new ExecutionContext(mockComputeService, mockLoadBalancerService));
 		
 	}
 	

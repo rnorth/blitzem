@@ -1,8 +1,9 @@
 package com.github.rnorth.blitzemj.model;
 
-import java.util.List;
-import java.util.Set;
-
+import com.github.rnorth.blitzemj.TaggedAndNamedItem;
+import com.github.rnorth.blitzemj.TaggedItemRegistry;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.loadbalancer.LoadBalancerService;
@@ -10,10 +11,8 @@ import org.jclouds.loadbalancer.domain.LoadBalancerMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.rnorth.blitzemj.TaggedAndNamedItem;
-import com.github.rnorth.blitzemj.TaggedItemRegistry;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Model class for a Load Balancer.
@@ -44,7 +43,36 @@ public class LoadBalancer implements TaggedAndNamedItem {
 		return name;
 	}
 
-	/**
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<String> getNotificationSubjects() {
+        return Sets.newHashSet(appliesToTag);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void notifyIsUp(TaggedAndNamedItem itemWhichIsUp, ExecutionContext executionContext) {
+        CONSOLE_LOG.info("Load Balancer {} notified that {} is up", this.getName(), itemWhichIsUp.getName());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void notifyIsGoingDown(TaggedAndNamedItem itemWhichIsGoingDown, ExecutionContext executionContext) {
+        CONSOLE_LOG.info("Load Balancer {} notified that {} is going down", this.getName(), itemWhichIsGoingDown.getName());
+    }
+
+    @Override
+    public boolean isUp(ExecutionContext executionContext) {
+        return ! LoadBalancer.findExistingLoadBalancersMatching(this, executionContext.getLoadBalancerService()).isEmpty();
+    }
+
+    /**
 	 * @return the protocol
 	 */
 	public String getProtocol() {
@@ -114,27 +142,31 @@ public class LoadBalancer implements TaggedAndNamedItem {
 		this.appliesToTag = appliesToTag;
 	}
 
-	public void preUp(LoadBalancerService loadBalancerService, ComputeService computeService, Iterable<Node> associatedNodes) {
+	public void preUp(ExecutionContext executionContext, Iterable<Node> associatedNodes) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	public void up(LoadBalancerService loadBalancerService, ComputeService computeService, Iterable<Node> associatedNodes) {
-		Set<NodeMetadata> associatedNodeMetadata = Sets.newHashSet();
+	public void up(ExecutionContext executionContext, Iterable<Node> associatedNodes) {
+
+        ComputeService computeService = executionContext.getComputeService();
+        LoadBalancerService loadBalancerService = executionContext.getLoadBalancerService();
+
+        Set<NodeMetadata> associatedNodeMetadata = Sets.newHashSet();
 		for (Node node : associatedNodes) {
 			associatedNodeMetadata.addAll(Node.findExistingNodesMatching(node, computeService));
-		}
-		
-		loadBalancerService.createLoadBalancerInLocation(
-				null, 
-				this.getName(), 
-				this.getProtocol(), 
-				this.getPort(), 
-				this.getNodePort(), 
-				associatedNodeMetadata);
+        }
+
+        loadBalancerService.createLoadBalancerInLocation(
+                null,
+                this.getName(),
+                this.getProtocol(),
+                this.getPort(),
+                this.getNodePort(),
+                associatedNodeMetadata);
 	}
 
-	public void postUp(LoadBalancerService loadBalancerService, ComputeService computeService, Iterable<Node> associatedNodes) {
+	public void postUp(ExecutionContext executionContext, Iterable<Node> associatedNodes) {
 		// TODO Auto-generated method stub
 		
 	}

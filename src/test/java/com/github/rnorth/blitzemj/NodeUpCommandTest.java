@@ -1,20 +1,12 @@
 package com.github.rnorth.blitzemj;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyDouble;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
-
-import java.util.Set;
-
+import com.github.rnorth.blitzemj.commands.UpCommand;
+import com.github.rnorth.blitzemj.model.ExecutionContext;
+import com.github.rnorth.blitzemj.model.Node;
+import com.github.rnorth.blitzemj.model.ScriptExecution;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -28,12 +20,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import com.github.rnorth.blitzemj.commands.UpCommand;
-import com.github.rnorth.blitzemj.model.Node;
-import com.github.rnorth.blitzemj.model.ScriptExecution;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import java.util.Set;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyDouble;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class NodeUpCommandTest {
 
@@ -64,7 +61,7 @@ public class NodeUpCommandTest {
 		final Set emptyNodeMetadataSet = Sets.newHashSet();
 		when(mockComputeService.listNodesDetailsMatching(any(Predicate.class))).thenReturn(emptyNodeMetadataSet);
 
-		new UpCommand().execute(node, mockComputeService);
+		new UpCommand().execute(node, new ExecutionContext(mockComputeService));
 
 		verify(mockComputeService).createNodesInGroup(eq("nodename"), eq(1), any(Template.class));
 	}
@@ -77,7 +74,7 @@ public class NodeUpCommandTest {
 		final Set existingNodeMetadataSet = Sets.newHashSet(mock(NodeMetadata.class));
 		when(mockComputeService.listNodesDetailsMatching(any(Predicate.class))).thenReturn(existingNodeMetadataSet);
 
-		new UpCommand().execute(node, mockComputeService);
+		new UpCommand().execute(node, new ExecutionContext(mockComputeService));
 
 		verify(mockComputeService, times(0)).createNodesInGroup(eq("nodename"), eq(1), any(Template.class));
 	}
@@ -90,7 +87,7 @@ public class NodeUpCommandTest {
 		final Set emptyNodeMetadataSet = Sets.newHashSet();
 		when(mockComputeService.listNodesDetailsMatching(any(Predicate.class))).thenReturn(emptyNodeMetadataSet);
 
-		new UpCommand().execute(node, mockComputeService);
+		new UpCommand().execute(node, new ExecutionContext(mockComputeService));
 		verify(mockTemplateBuilder, times(1)).options(argThat(new IsPublicSshKeyUpload()));
 	}
 	
@@ -103,7 +100,7 @@ public class NodeUpCommandTest {
 		final Set emptyNodeMetadataSet = Sets.newHashSet();
 		when(mockComputeService.listNodesDetailsMatching(any(Predicate.class))).thenReturn(emptyNodeMetadataSet);
 
-		new UpCommand().execute(node, mockComputeService);
+		new UpCommand().execute(node, new ExecutionContext(mockComputeService));
 		verify(mockTemplateBuilder, times(1)).options(argThat(new IsPublicSshKeyUpload()));
 		verify(mockTemplateBuilder, times(1)).options(argThat(new IsScriptExecution("hostname")));
 	}

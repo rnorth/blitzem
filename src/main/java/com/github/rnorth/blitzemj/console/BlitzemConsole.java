@@ -1,13 +1,16 @@
 package com.github.rnorth.blitzemj.console;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import com.github.rnorth.blitzemj.TaggedItemRegistry;
+import com.github.rnorth.blitzemj.commands.*;
+import com.github.rnorth.blitzemj.model.Defaults;
+import com.github.rnorth.blitzemj.model.ExecutionContext;
+import com.github.rnorth.blitzemj.model.LoadBalancer;
+import com.github.rnorth.blitzemj.model.Node;
+import com.google.common.collect.ImmutableSet;
+import com.google.inject.Module;
 import groovy.lang.GroovyShell;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Properties;
-
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.ComputeServiceContext;
@@ -19,24 +22,11 @@ import org.jclouds.logging.slf4j.config.SLF4JLoggingModule;
 import org.jclouds.ssh.jsch.config.JschSshClientModule;
 import org.slf4j.LoggerFactory;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-
-import com.github.rnorth.blitzemj.TaggedItemRegistry;
-import com.github.rnorth.blitzemj.commands.BaseCommand;
-import com.github.rnorth.blitzemj.commands.CommandException;
-import com.github.rnorth.blitzemj.commands.DownCommand;
-import com.github.rnorth.blitzemj.commands.HelpCommand;
-import com.github.rnorth.blitzemj.commands.PerLoadBalancerCommand;
-import com.github.rnorth.blitzemj.commands.PerNodeCommand;
-import com.github.rnorth.blitzemj.commands.StatusCommand;
-import com.github.rnorth.blitzemj.commands.UpCommand;
-import com.github.rnorth.blitzemj.commands.WholeEnvironmentCommand;
-import com.github.rnorth.blitzemj.model.Defaults;
-import com.github.rnorth.blitzemj.model.LoadBalancer;
-import com.github.rnorth.blitzemj.model.Node;
-import com.google.common.collect.ImmutableSet;
-import com.google.inject.Module;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Properties;
 
 /**
  * Main Blitzem console entry point.
@@ -77,17 +67,20 @@ public class BlitzemConsole {
 		ComputeService computeService = computeServiceContext!=null ? computeServiceContext.getComputeService() : null;
 		LoadBalancerService loadBalancerService = loadBalancerServiceContext!=null ? loadBalancerServiceContext.getLoadBalancerService() : null;
 
-		try {
+        ExecutionContext executionContext = new ExecutionContext(computeService, loadBalancerService);
+
+
+        try {
 
 			if (command instanceof WholeEnvironmentCommand && computeService!=null && loadBalancerService!=null) {
 				CONSOLE_LOG.info("Applying command {} to whole environment", command.getClass().getSimpleName());
-				((WholeEnvironmentCommand) command).execute(computeService, loadBalancerService);
+				((WholeEnvironmentCommand) command).execute(executionContext);
 			} else if (command instanceof PerNodeCommand) {
 				
 				if (computeService!=null) {
 					for (Node node : TaggedItemRegistry.getInstance().findMatching(command.getNoun(), Node.class)) {
 						CONSOLE_LOG.info("Applying command {} to node '{}'", command.getClass().getSimpleName(), node.getName());
-						((PerNodeCommand) command).execute(node, computeService);
+						((PerNodeCommand) command).execute(node, executionContext);
 					}
 				}
 				
@@ -95,13 +88,13 @@ public class BlitzemConsole {
 					for (LoadBalancer loadBalancer : TaggedItemRegistry.getInstance().findMatching(command.getNoun(), LoadBalancer.class)) {
 						CONSOLE_LOG.info("Applying command {} to load balancer '{}'", command.getClass().getSimpleName(),
 								loadBalancer.getName());
-						((PerLoadBalancerCommand) command).execute(loadBalancer, loadBalancerService, computeService);
+						((PerLoadBalancerCommand) command).execute(loadBalancer, executionContext);
 					}
 				}
 
 				if (computeService!=null && loadBalancerService!=null) {
 					// always display status
-					new StatusCommand().execute(computeService, loadBalancerService);
+					new StatusCommand().execute(executionContext);
 				}
 			}
 

@@ -3,6 +3,7 @@
  */
 package com.github.rnorth.blitzemj;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.collect.Lists;
@@ -65,4 +66,28 @@ public class TaggedItemRegistry {
 
 		return found;
 	}
+
+    /**
+     * Find all items in the registry which are interested in receiving notifications
+     * about the state of other items.
+     *
+     * @param nameOrTag the name or tag about which a notification may be raised
+     * @param clazz the class of notification recipients
+     * @param <T>
+     * @return
+     */
+    public <T> List<T> findReceivesNotificationsFor(String nameOrTag, Class<T> clazz) {
+        List<T> found = Lists.newArrayList();
+
+        for (TaggedAndNamedItem item : items) {
+            final boolean correctClass = clazz.isAssignableFrom(item.getClass());
+            final boolean isInterested = item.getNotificationSubjects().contains(nameOrTag);
+
+            if (correctClass && isInterested) {
+                found.add((T) item);
+            }
+        }
+        
+        return found;
+    }
 }

@@ -1,7 +1,8 @@
 package com.github.rnorth.blitzemj.commands;
 
-import java.util.Set;
-
+import com.github.rnorth.blitzemj.model.ExecutionContext;
+import com.github.rnorth.blitzemj.model.LoadBalancer;
+import com.github.rnorth.blitzemj.model.Node;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.loadbalancer.LoadBalancerService;
@@ -9,8 +10,7 @@ import org.jclouds.loadbalancer.domain.LoadBalancerMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.rnorth.blitzemj.model.LoadBalancer;
-import com.github.rnorth.blitzemj.model.Node;
+import java.util.Set;
 
 /**
  * A command to bring down (destroy) a {@link Node}.
@@ -25,16 +25,18 @@ public class DownCommand extends BaseCommand implements PerNodeCommand, PerLoadB
 	/** 
 	 * {@inheritDoc}
 	 */
-	public void execute(final Node node, ComputeService computeService) throws CommandException {
+	public void execute(final Node node, ExecutionContext executionContext) throws CommandException {
 
-		Set<? extends NodeMetadata> existingNodes = Node.findExistingNodesMatching(node, computeService);
+        ComputeService computeService = executionContext.getComputeService();
+
+        Set<? extends NodeMetadata> existingNodes = Node.findExistingNodesMatching(node, computeService);
 
 		if (existingNodes.isEmpty()) {
 			CONSOLE_LOG.info("Node does not exist");
         } else {
-			node.preDown(computeService);
-			node.down(computeService);
-			node.postDown(computeService);
+			node.preDown(executionContext);
+			node.down(executionContext);
+			node.postDown(executionContext);
 		}
 
 	}
@@ -42,9 +44,12 @@ public class DownCommand extends BaseCommand implements PerNodeCommand, PerLoadB
 	/** 
 	 * {@inheritDoc}
 	 */
-	public void execute(LoadBalancer loadBalancer, LoadBalancerService loadBalancerService, ComputeService computeService) throws CommandException {
-		
-		Set<LoadBalancerMetadata> existingLBs = LoadBalancer.findExistingLoadBalancersMatching(loadBalancer, loadBalancerService);
+	public void execute(LoadBalancer loadBalancer, ExecutionContext executionContext) throws CommandException {
+
+        ComputeService computeService = executionContext.getComputeService();
+        LoadBalancerService loadBalancerService = executionContext.getLoadBalancerService();
+
+        Set<LoadBalancerMetadata> existingLBs = LoadBalancer.findExistingLoadBalancersMatching(loadBalancer, loadBalancerService);
 
 		if (existingLBs.isEmpty()) {
 			CONSOLE_LOG.info("Load balancer does not exist");

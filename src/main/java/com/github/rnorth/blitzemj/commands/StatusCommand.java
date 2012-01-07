@@ -1,22 +1,21 @@
 package com.github.rnorth.blitzemj.commands;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-
+import ch.qos.logback.classic.Logger;
+import com.github.rnorth.blitzemj.TaggedItemRegistry;
+import com.github.rnorth.blitzemj.model.ExecutionContext;
+import com.github.rnorth.blitzemj.model.LoadBalancer;
+import com.github.rnorth.blitzemj.model.Node;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.loadbalancer.LoadBalancerService;
 import org.jclouds.loadbalancer.domain.LoadBalancerMetadata;
 import org.slf4j.LoggerFactory;
 
-import ch.qos.logback.classic.Logger;
-
-import com.github.rnorth.blitzemj.TaggedItemRegistry;
-import com.github.rnorth.blitzemj.model.LoadBalancer;
-import com.github.rnorth.blitzemj.model.Node;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Command to display status of the environment in tabular format.
@@ -31,9 +30,12 @@ public class StatusCommand extends BaseCommand implements WholeEnvironmentComman
 	/**
 	 * {@inheritDoc}
 	 */
-	public void execute(ComputeService computeService, LoadBalancerService loadBalancerService) {
-		
-		CONSOLE_LOG.info("Fetching status of nodes and load balancers");
+	public void execute(ExecutionContext executionContext) {
+
+        ComputeService computeService = executionContext.getComputeService();
+        LoadBalancerService loadBalancerService = executionContext.getLoadBalancerService();
+
+        CONSOLE_LOG.info("Fetching status of nodes and load balancers");
 
 		List<List<String>> table = Lists.newArrayList();
 		table.add(Arrays.asList("Node name", "Status", "IP Address", "Tags", "Location"));
@@ -74,8 +76,7 @@ public class StatusCommand extends BaseCommand implements WholeEnvironmentComman
 	}
 
 	/**
-	 * Print out information in tabular format. Adapted from {@link http
-	 * ://stackoverflow
+	 * Print out information in tabular format. Adapted from {@see http://stackoverflow
 	 * .com/questions/275338/java-print-a-2d-string-array-as-a-right
 	 * -justified-table/275438#275438}
 	 * 

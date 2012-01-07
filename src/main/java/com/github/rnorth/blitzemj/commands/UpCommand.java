@@ -1,7 +1,10 @@
 package com.github.rnorth.blitzemj.commands;
 
-import java.util.Set;
-
+import com.github.rnorth.blitzemj.TaggedItemRegistry;
+import com.github.rnorth.blitzemj.model.ExecutionContext;
+import com.github.rnorth.blitzemj.model.LoadBalancer;
+import com.github.rnorth.blitzemj.model.Node;
+import com.google.common.collect.Sets;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.loadbalancer.LoadBalancerService;
@@ -9,10 +12,7 @@ import org.jclouds.loadbalancer.domain.LoadBalancerMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.rnorth.blitzemj.TaggedItemRegistry;
-import com.github.rnorth.blitzemj.model.LoadBalancer;
-import com.github.rnorth.blitzemj.model.Node;
-import com.google.common.collect.Sets;
+import java.util.Set;
 
 /**
  * Command to create a {@link Node} if it does not already exist.
@@ -27,8 +27,9 @@ public class UpCommand extends BaseCommand implements PerNodeCommand, PerLoadBal
 	/** 
 	 * {@inheritDoc}
 	 */
-	public void execute(final Node node, ComputeService computeService) throws CommandException {
+	public void execute(final Node node, ExecutionContext executionContext) throws CommandException {
 
+        ComputeService computeService = executionContext.getComputeService();
 		Set<? extends NodeMetadata> existingNodes = Node.findExistingNodesMatching(node, computeService);
 
 		if (!existingNodes.isEmpty()) {
@@ -39,18 +40,21 @@ public class UpCommand extends BaseCommand implements PerNodeCommand, PerLoadBal
 			}
 			CONSOLE_LOG.info("Node already exists - IP Address(es): {}", publicAddresses);
         } else {
-			node.preUp(computeService);
-			node.up(computeService);
-			node.postUp(computeService);
+			node.preUp(executionContext);
+			node.up(executionContext);
+			node.postUp(executionContext);
 		}
 	}
 
 	/** 
 	 * {@inheritDoc}
 	 */
-	public void execute(LoadBalancer loadBalancer, LoadBalancerService loadBalancerService, ComputeService computeService) throws CommandException {
-	
-		Set<? extends LoadBalancerMetadata> existingLBs = LoadBalancer.findExistingLoadBalancersMatching(loadBalancer, loadBalancerService);
+	public void execute(LoadBalancer loadBalancer, ExecutionContext executionContext) throws CommandException {
+
+        LoadBalancerService loadBalancerService = executionContext.getLoadBalancerService();
+        ComputeService computeService = executionContext.getComputeService();
+
+        Set<? extends LoadBalancerMetadata> existingLBs = LoadBalancer.findExistingLoadBalancersMatching(loadBalancer, loadBalancerService);
 		if (!existingLBs.isEmpty()) {
 
 			Set<String> publicAddresses = Sets.newHashSet();
@@ -61,9 +65,9 @@ public class UpCommand extends BaseCommand implements PerNodeCommand, PerLoadBal
         } else {
 			Iterable<Node> associatedNodes = TaggedItemRegistry.getInstance().findMatching(loadBalancer.getAppliesToTag(), Node.class);
 			
-			loadBalancer.preUp(loadBalancerService, computeService, associatedNodes);
-			loadBalancer.up(loadBalancerService, computeService, associatedNodes);
-			loadBalancer.postUp(loadBalancerService, computeService, associatedNodes);
+			loadBalancer.preUp(executionContext, associatedNodes);
+			loadBalancer.up(executionContext, associatedNodes);
+			loadBalancer.postUp(executionContext, associatedNodes);
 		}
 	}
 }
