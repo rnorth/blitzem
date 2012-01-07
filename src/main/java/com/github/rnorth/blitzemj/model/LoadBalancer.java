@@ -3,6 +3,13 @@ package com.github.rnorth.blitzemj.model;
 import java.util.List;
 import java.util.Set;
 
+import org.jclouds.compute.ComputeService;
+import org.jclouds.compute.domain.NodeMetadata;
+import org.jclouds.loadbalancer.LoadBalancerService;
+import org.jclouds.loadbalancer.domain.LoadBalancerMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.rnorth.blitzemj.TaggedAndNamedItem;
 import com.github.rnorth.blitzemj.TaggedItemRegistry;
 import com.google.common.collect.Lists;
@@ -15,6 +22,8 @@ import com.google.common.collect.Sets;
  *
  */
 public class LoadBalancer implements TaggedAndNamedItem {
+
+	private static final Logger CONSOLE_LOG = LoggerFactory.getLogger(LoadBalancer.class);
 
 	private String name;
 	private List<String> tags = Lists.newArrayList();
@@ -103,5 +112,70 @@ public class LoadBalancer implements TaggedAndNamedItem {
 	 */
 	public void setAppliesToTag(String appliesToTag) {
 		this.appliesToTag = appliesToTag;
+	}
+
+	public void preUp(LoadBalancerService loadBalancerService, ComputeService computeService, Iterable<Node> associatedNodes) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void up(LoadBalancerService loadBalancerService, ComputeService computeService, Iterable<Node> associatedNodes) {
+		Set<NodeMetadata> associatedNodeMetadata = Sets.newHashSet();
+		for (Node node : associatedNodes) {
+			associatedNodeMetadata.addAll(Node.findExistingNodesMatching(node, computeService));
+		}
+		
+		loadBalancerService.createLoadBalancerInLocation(
+				null, 
+				this.getName(), 
+				this.getProtocol(), 
+				this.getPort(), 
+				this.getNodePort(), 
+				associatedNodeMetadata);
+	}
+
+	public void postUp(LoadBalancerService loadBalancerService, ComputeService computeService, Iterable<Node> associatedNodes) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+
+	
+
+	public static Set<LoadBalancerMetadata> findExistingLoadBalancersMatching(LoadBalancer loadBalancer,
+			LoadBalancerService loadBalancerService) {
+		
+		Set<? extends LoadBalancerMetadata> loadBalancers = loadBalancerService.listLoadBalancers();
+		Set<LoadBalancerMetadata> matchingLoadBalancers = Sets.newHashSet();
+		
+		for (LoadBalancerMetadata lbInstance : loadBalancers) {
+			final String name = lbInstance.getName();
+			if (name.equals(loadBalancer.getName())) {
+				matchingLoadBalancers.add(lbInstance);
+			}
+		}
+		
+		return matchingLoadBalancers;
+	}
+
+	public void preDown(LoadBalancerService loadBalancerService, ComputeService computeService) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void down(LoadBalancerService loadBalancerService, ComputeService computeService) {
+		
+		Set<LoadBalancerMetadata> existingLBs = LoadBalancer.findExistingLoadBalancersMatching(this, loadBalancerService);
+		
+		for (LoadBalancerMetadata existingLB : existingLBs) {
+			CONSOLE_LOG.info("Bringing down load balancer {}", existingLB.getName());
+			loadBalancerService.destroyLoadBalancer(existingLB.getId());
+			CONSOLE_LOG.info("Load balancer destroyed");
+		}
+	}
+
+	public void postDown(LoadBalancerService loadBalancerService, ComputeService computeService) {
+		// TODO Auto-generated method stub
+		
 	}
 }

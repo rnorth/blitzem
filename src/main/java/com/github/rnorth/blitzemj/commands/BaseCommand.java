@@ -28,53 +28,6 @@ public abstract class BaseCommand implements Command {
 	private Boolean superVerbose = false;
 	private String source = "./environment.groovy";
 
-	/**
-	 * Find an existing live node ({@link NodeMetadata}) which matches 1:1 with
-	 * a modelled {@link Node} in the local environment spec.
-	 * 
-	 * @param node
-	 *            the modelled Node
-	 * @param computeService
-	 *            for looking up live nodes
-	 * @return a set of matching {@link NodeMetadata}s - usually expect just
-	 *         one, but more could be found and should be handled.
-	 */
-	protected Set<? extends NodeMetadata> findExistingNodesMatching(final Node node, ComputeService computeService) {
-		Set<? extends NodeMetadata> existingNodes = computeService.listNodesDetailsMatching(new Predicate<ComputeMetadata>() {
-
-			public boolean apply(ComputeMetadata arg0) {
-				final String name = arg0.getName();
-
-				if (name.contains("-")) {
-					String trimmedName = name.substring(0, name.lastIndexOf('-'));
-					return trimmedName.equals(node.getName());
-				} else {
-					return name.equals(node.getName());
-				}
-
-			}
-
-		});
-		return existingNodes;
-	}
-	
-
-	protected Set<LoadBalancerMetadata> findExistingLoadBalancersMatching(LoadBalancer loadBalancer,
-			LoadBalancerService loadBalancerService) {
-		
-		Set<? extends LoadBalancerMetadata> loadBalancers = loadBalancerService.listLoadBalancers();
-		Set<LoadBalancerMetadata> matchingLoadBalancers = Sets.newHashSet();
-		
-		for (LoadBalancerMetadata lbInstance : loadBalancers) {
-			final String name = lbInstance.getName();
-			if (name.equals(loadBalancer.getName())) {
-				matchingLoadBalancers.add(lbInstance);
-			}
-		}
-		
-		return matchingLoadBalancers;
-	}
-
 	/** 
 	 * {@inheritDoc}
 	 */

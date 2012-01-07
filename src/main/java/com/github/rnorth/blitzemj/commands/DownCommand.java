@@ -27,18 +27,17 @@ public class DownCommand extends BaseCommand implements PerNodeCommand, PerLoadB
 	 */
 	public void execute(final Node node, ComputeService computeService) throws CommandException {
 
-		Set<? extends NodeMetadata> existingNodes = findExistingNodesMatching(node, computeService);
+		Set<? extends NodeMetadata> existingNodes = Node.findExistingNodesMatching(node, computeService);
 
 		if (existingNodes.isEmpty()) {
 			CONSOLE_LOG.info("Node does not exist");
 			return;
+		} else {
+			node.preDown(computeService);
+			node.down(computeService);
+			node.postDown(computeService);
 		}
 
-		for (NodeMetadata existingNode : existingNodes) {
-			CONSOLE_LOG.info("Bringing down node {}", existingNode.getName());
-			computeService.destroyNode(existingNode.getId());
-			CONSOLE_LOG.info("Node destroyed");
-		}
 	}
 	
 	/** 
@@ -46,17 +45,15 @@ public class DownCommand extends BaseCommand implements PerNodeCommand, PerLoadB
 	 */
 	public void execute(LoadBalancer loadBalancer, LoadBalancerService loadBalancerService, ComputeService computeService) throws CommandException {
 		
-		Set<LoadBalancerMetadata> existingLBs = findExistingLoadBalancersMatching(loadBalancer, loadBalancerService);
+		Set<LoadBalancerMetadata> existingLBs = LoadBalancer.findExistingLoadBalancersMatching(loadBalancer, loadBalancerService);
 
 		if (existingLBs.isEmpty()) {
 			CONSOLE_LOG.info("Load balancer does not exist");
 			return;
-		}
-
-		for (LoadBalancerMetadata existingLB : existingLBs) {
-			CONSOLE_LOG.info("Bringing down load balancer {}", existingLB.getName());
-			loadBalancerService.destroyLoadBalancer(existingLB.getId());
-			CONSOLE_LOG.info("Load balancer destroyed");
+		} else {
+			loadBalancer.preDown(loadBalancerService, computeService);
+			loadBalancer.down(loadBalancerService, computeService);
+			loadBalancer.postDown(loadBalancerService, computeService);
 		}
 	}
 }
