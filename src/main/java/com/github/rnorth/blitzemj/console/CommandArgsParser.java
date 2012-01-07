@@ -63,7 +63,7 @@ public class CommandArgsParser {
 
 		Command command = null;
 
-		for (Class<? extends Command> clazz : classes) {
+        for (Class<? extends Command> clazz : classes) {
 			final String verb = getVerb(args);
 			if (clazz.getSimpleName().replace("Command", "").toLowerCase().equals(verb)) {
 				command = clazz.newInstance();
@@ -90,10 +90,18 @@ public class CommandArgsParser {
 	 * @param args
 	 */
 	private void applyNoun(Command command, String[] args) {
-		String arg = args[args.length - 1];
-		if (!Pattern.matches("--.+", arg)) {
-			command.setNoun(arg);
-		}
+
+        boolean isFirstUndashedArg = true;
+        for (String arg : args) {
+            if (!Pattern.matches("--.+", arg)) {
+                if (isFirstUndashedArg) {
+                    isFirstUndashedArg = false;
+                } else {
+                    // is noun
+                    command.setNoun(arg);
+                }
+            }
+        }
 	}
 
 	/**

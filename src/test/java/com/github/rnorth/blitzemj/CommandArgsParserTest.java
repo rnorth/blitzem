@@ -66,4 +66,13 @@ public class CommandArgsParserTest {
 		assertNotNull(command);
 		assertEquals("web", command.getNoun());
 	}
+    
+    @Test
+    public void capturesStandaloneVerb() throws Exception {
+        Command command = new CommandArgsParser(StatusCommand.class).parse(new String[] {"--verbose", "status"});
+
+        assertNotNull(command);
+        assertTrue(command instanceof  StatusCommand);
+        assertEquals(null, command.getNoun());
+    }
 }
