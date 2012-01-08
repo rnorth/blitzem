@@ -22,7 +22,7 @@ import java.util.Set;
  */
 public class LoadBalancer implements TaggedAndNamedItem {
 
-	private static final Logger CONSOLE_LOG = LoggerFactory.getLogger(LoadBalancer.class);
+	protected static final Logger CONSOLE_LOG = LoggerFactory.getLogger(LoadBalancer.class);
 
 	private String name;
 	private List<String> tags = Lists.newArrayList();
