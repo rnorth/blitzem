@@ -1,4 +1,4 @@
-package com.github.rnorth.blitzemj.console;
+package org.blitzem.console;
 
 
 /**

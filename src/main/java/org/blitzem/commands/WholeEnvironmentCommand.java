@@ -1,7 +1,7 @@
-package com.github.rnorth.blitzemj.commands;
+package org.blitzem.commands;
 
-import com.github.rnorth.blitzemj.model.ExecutionContext;
-import com.github.rnorth.blitzemj.model.Node;
+import org.blitzem.model.ExecutionContext;
+import org.blitzem.model.Node;
 
 /**
  * A specialization of {@link Command} which should be executed for the

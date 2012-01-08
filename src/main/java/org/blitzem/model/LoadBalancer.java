@@ -1,6 +1,6 @@
-package com.github.rnorth.blitzemj.model;
+package org.blitzem.model;
 
-import com.github.rnorth.blitzemj.TaggedAndNamedItem;
+import org.blitzem.TaggedAndNamedItem;
 import com.github.rnorth.blitzemj.TaggedItemRegistry;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;

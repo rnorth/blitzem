@@ -1,8 +1,8 @@
 package com.github.rnorth.blitzemj;
 
-import com.github.rnorth.blitzemj.commands.DownCommand;
-import com.github.rnorth.blitzemj.model.ExecutionContext;
-import com.github.rnorth.blitzemj.model.Node;
+import org.blitzem.commands.DownCommand;
+import org.blitzem.model.ExecutionContext;
+import org.blitzem.model.Node;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Sets;
 import org.jclouds.compute.ComputeService;

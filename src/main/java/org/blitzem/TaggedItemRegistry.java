@@ -1,12 +1,11 @@
 /**
  * 
  */
-package com.github.rnorth.blitzemj;
-
-import java.util.ArrayList;
-import java.util.List;
+package org.blitzem;
 
 import com.google.common.collect.Lists;
+
+import java.util.List;
 
 /**
  * Acts as a registry for items which have names or tags.

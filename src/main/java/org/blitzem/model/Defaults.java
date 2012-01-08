@@ -1,9 +1,8 @@
-package com.github.rnorth.blitzemj.model;
+package org.blitzem.model;
 
 import groovy.lang.GroovyShell;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 import org.codehaus.groovy.control.CompilationFailedException;

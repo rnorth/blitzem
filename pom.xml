@@ -55,7 +55,7 @@
 	</dependencies>
 	
 	<properties>
-	   <appClass>com.github.rnorth.blitzemj.console.BlitzemConsole</appClass>
+	   <appClass>org.blitzem.console.BlitzemConsole</appClass>
 	   <jclouds.version>1.3.0-rc-1</jclouds.version>
 	</properties>
 

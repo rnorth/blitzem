@@ -5,12 +5,12 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.github.rnorth.blitzemj.commands.BaseCommand;
-import com.github.rnorth.blitzemj.commands.Command;
-import com.github.rnorth.blitzemj.commands.HelpCommand;
-import com.github.rnorth.blitzemj.commands.StatusCommand;
-import com.github.rnorth.blitzemj.commands.UpCommand;
-import com.github.rnorth.blitzemj.console.CommandArgsParser;
+import org.blitzem.commands.BaseCommand;
+import org.blitzem.commands.Command;
+import org.blitzem.commands.HelpCommand;
+import org.blitzem.commands.StatusCommand;
+import org.blitzem.commands.UpCommand;
+import org.blitzem.console.CommandArgsParser;
 
 public class CommandArgsParserTest {
 

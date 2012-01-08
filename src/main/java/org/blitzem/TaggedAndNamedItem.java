@@ -1,6 +1,6 @@
-package com.github.rnorth.blitzemj;
+package org.blitzem;
 
-import com.github.rnorth.blitzemj.model.ExecutionContext;
+import org.blitzem.model.ExecutionContext;
 
 import java.util.List;
 import java.util.Set;

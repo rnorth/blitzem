@@ -1,9 +1,9 @@
-package com.github.rnorth.blitzemj.model.thirdparty;
+package org.blitzem.model.thirdparty;
 
-import com.github.rnorth.blitzemj.TaggedAndNamedItem;
-import com.github.rnorth.blitzemj.model.ExecutionContext;
-import com.github.rnorth.blitzemj.model.LoadBalancer;
-import com.github.rnorth.blitzemj.model.Node;
+import org.blitzem.TaggedAndNamedItem;
+import org.blitzem.model.ExecutionContext;
+import org.blitzem.model.LoadBalancer;
+import org.blitzem.model.Node;
 import com.google.common.collect.Sets;
 import org.jclouds.cloudloadbalancers.CloudLoadBalancersClient;
 import org.jclouds.cloudloadbalancers.domain.NodeRequest;

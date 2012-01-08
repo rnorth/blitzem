@@ -1,6 +1,6 @@
-import com.github.rnorth.blitzemj.model.*
-import com.github.rnorth.blitzemj.model.thirdparty.*
-import static com.github.rnorth.blitzemj.model.Size.*
+import org.blitzem.model.*
+import org.blitzem.model.thirdparty.*
+import static org.blitzem.model.Size.*
 
 
 Defaults.DEFAULTS["osVersion"] = "11.04"

@@ -1,8 +1,8 @@
-package com.github.rnorth.blitzemj.model;
+package org.blitzem.model;
 
-import com.github.rnorth.blitzemj.TaggedAndNamedItem;
+import org.blitzem.TaggedAndNamedItem;
 import com.github.rnorth.blitzemj.TaggedItemRegistry;
-import com.github.rnorth.blitzemj.commands.CommandException;
+import org.blitzem.commands.CommandException;
 import com.google.common.base.Charsets;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;

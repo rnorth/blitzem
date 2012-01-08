@@ -1,10 +1,8 @@
-package com.github.rnorth.blitzemj.commands;
+package org.blitzem.commands;
 
-import com.github.rnorth.blitzemj.model.ExecutionContext;
-import org.jclouds.compute.ComputeService;
-import org.jclouds.loadbalancer.LoadBalancerService;
+import org.blitzem.model.ExecutionContext;
 
-import com.github.rnorth.blitzemj.model.LoadBalancer;
+import org.blitzem.model.LoadBalancer;
 
 /**
  * A specialization of {@link Command} which should be executed on every

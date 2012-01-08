@@ -10,7 +10,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.util.Set;
 
-import com.github.rnorth.blitzemj.model.ExecutionContext;
+import org.blitzem.model.ExecutionContext;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.domain.Location;
@@ -19,9 +19,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import com.github.rnorth.blitzemj.commands.UpCommand;
-import com.github.rnorth.blitzemj.model.LoadBalancer;
-import com.github.rnorth.blitzemj.model.Node;
+import org.blitzem.commands.UpCommand;
+import org.blitzem.model.LoadBalancer;
+import org.blitzem.model.Node;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Sets;
 

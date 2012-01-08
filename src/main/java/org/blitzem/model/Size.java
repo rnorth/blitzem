@@ -1,4 +1,4 @@
-package com.github.rnorth.blitzemj.model;
+package org.blitzem.model;
 
 
 /**

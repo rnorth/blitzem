@@ -1,18 +1,4 @@
-package com.github.rnorth.blitzemj.commands;
-
-import java.util.Set;
-
-import org.jclouds.compute.ComputeService;
-import org.jclouds.compute.domain.ComputeMetadata;
-import org.jclouds.compute.domain.NodeMetadata;
-import org.jclouds.loadbalancer.LoadBalancerService;
-import org.jclouds.loadbalancer.domain.LoadBalancerMetadata;
-
-import com.github.rnorth.blitzemj.model.LoadBalancer;
-import com.github.rnorth.blitzemj.model.Node;
-import com.google.common.base.Functions;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Sets;
+package org.blitzem.commands;
 
 /**
  * Base implementation for Command object classes, providing support for common

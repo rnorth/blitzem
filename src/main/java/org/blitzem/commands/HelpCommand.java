@@ -1,6 +1,6 @@
-package com.github.rnorth.blitzemj.commands;
+package org.blitzem.commands;
 
-import com.github.rnorth.blitzemj.model.ExecutionContext;
+import org.blitzem.model.ExecutionContext;
 
 /**
  * A command to display help for using the Blitzem application.

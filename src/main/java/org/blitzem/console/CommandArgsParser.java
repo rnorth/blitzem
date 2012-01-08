@@ -1,11 +1,11 @@
-package com.github.rnorth.blitzemj.console;
+package org.blitzem.console;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.github.rnorth.blitzemj.commands.Command;
+import org.blitzem.commands.Command;
 
 /**
  * Utility to parse command line arguments into a {@link Command} object.
