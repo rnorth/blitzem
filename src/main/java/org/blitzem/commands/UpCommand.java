@@ -1,10 +1,10 @@
 package org.blitzem.commands;
 
-import com.github.rnorth.blitzemj.TaggedItemRegistry;
+import com.google.common.collect.Sets;
+import org.blitzem.TaggedItemRegistry;
 import org.blitzem.model.ExecutionContext;
 import org.blitzem.model.LoadBalancer;
 import org.blitzem.model.Node;
-import com.google.common.collect.Sets;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.loadbalancer.LoadBalancerService;

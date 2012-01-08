@@ -1,9 +1,9 @@
 package org.blitzem.model;
 
-import org.blitzem.TaggedAndNamedItem;
-import com.github.rnorth.blitzemj.TaggedItemRegistry;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import org.blitzem.TaggedAndNamedItem;
+import org.blitzem.TaggedItemRegistry;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.loadbalancer.LoadBalancerService;
