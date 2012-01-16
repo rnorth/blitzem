@@ -44,35 +44,6 @@ public class LoadBalancer implements TaggedAndNamedItem {
 	}
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Set<String> getNotificationSubjects() {
-        return Sets.newHashSet(appliesToTag);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void notifyIsUp(TaggedAndNamedItem itemWhichIsUp, ExecutionContext executionContext) {
-        CONSOLE_LOG.info("Load Balancer {} notified that {} is up", this.getName(), itemWhichIsUp.getName());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void notifyIsGoingDown(TaggedAndNamedItem itemWhichIsGoingDown, ExecutionContext executionContext) {
-        CONSOLE_LOG.info("Load Balancer {} notified that {} is going down", this.getName(), itemWhichIsGoingDown.getName());
-    }
-
-    @Override
-    public boolean isUp(ExecutionContext executionContext) {
-        return ! LoadBalancer.findExistingLoadBalancersMatching(this, executionContext.getLoadBalancerService()).isEmpty();
-    }
-
-    /**
 	 * @return the protocol
 	 */
 	public String getProtocol() {
@@ -142,11 +113,19 @@ public class LoadBalancer implements TaggedAndNamedItem {
 		this.appliesToTag = appliesToTag;
 	}
 
+	/**
+	 * @param executionContext
+	 * @param associatedNodes
+	 */
 	public void preUp(ExecutionContext executionContext, Iterable<Node> associatedNodes) {
 		// TODO Auto-generated method stub
 		
 	}
 
+	/**
+	 * @param executionContext
+	 * @param associatedNodes
+	 */
 	public void up(ExecutionContext executionContext, Iterable<Node> associatedNodes) {
 
         ComputeService computeService = executionContext.getComputeService();
@@ -166,6 +145,10 @@ public class LoadBalancer implements TaggedAndNamedItem {
                 associatedNodeMetadata);
 	}
 
+	/**
+	 * @param executionContext
+	 * @param associatedNodes
+	 */
 	public void postUp(ExecutionContext executionContext, Iterable<Node> associatedNodes) {
 		// TODO Auto-generated method stub
 		
@@ -174,6 +157,11 @@ public class LoadBalancer implements TaggedAndNamedItem {
 
 	
 
+	/**
+	 * @param loadBalancer
+	 * @param loadBalancerService
+	 * @return
+	 */
 	public static Set<LoadBalancerMetadata> findExistingLoadBalancersMatching(LoadBalancer loadBalancer,
 			LoadBalancerService loadBalancerService) {
 		
@@ -190,11 +178,18 @@ public class LoadBalancer implements TaggedAndNamedItem {
 		return matchingLoadBalancers;
 	}
 
+	/**
+	 * @param loadBalancerService
+	 * @param computeService
+	 */
 	public void preDown(LoadBalancerService loadBalancerService, ComputeService computeService) {
-		// TODO Auto-generated method stub
-		
+		// no action
 	}
 
+	/**
+	 * @param loadBalancerService
+	 * @param computeService
+	 */
 	public void down(LoadBalancerService loadBalancerService, ComputeService computeService) {
 		
 		Set<LoadBalancerMetadata> existingLBs = LoadBalancer.findExistingLoadBalancersMatching(this, loadBalancerService);
@@ -206,8 +201,43 @@ public class LoadBalancer implements TaggedAndNamedItem {
 		}
 	}
 
+	/**
+	 * @param loadBalancerService
+	 * @param computeService
+	 */
 	public void postDown(LoadBalancerService loadBalancerService, ComputeService computeService) {
-		// TODO Auto-generated method stub
-		
+		// no action
+	}
+
+	/** 
+	 * {@inheritDoc}
+	 */
+	public Set<String> getNotificationSubjects() {
+		return Sets.newHashSet(appliesToTag);
+	}
+
+	/** 
+	 * {@inheritDoc}
+	 */
+	public void notifyIsUp(TaggedAndNamedItem itemWhichIsUp, ExecutionContext executionContext) {
+		if (isUp(executionContext)) {
+			CONSOLE_LOG.info("Load balancer {} being notified that {} is up", this, itemWhichIsUp);
+		}
+	}
+
+	/** 
+	 * {@inheritDoc}
+	 */
+	public void notifyIsGoingDown(TaggedAndNamedItem itemWhichIsGoingDown, ExecutionContext executionContext) {
+		if (isUp(executionContext)) {
+			CONSOLE_LOG.info("Load balancer {} being notified that {} is going down", this, itemWhichIsGoingDown);
+		}
+	}
+
+	/** 
+	 * {@inheritDoc}
+	 */
+	public boolean isUp(ExecutionContext executionContext) {
+		return ! LoadBalancer.findExistingLoadBalancersMatching(this, executionContext.getLoadBalancerService()).isEmpty();
 	}
 }

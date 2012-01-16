@@ -18,11 +18,23 @@ new RackspaceCloudLoadBalancer([
 new Node([
 	name:"web1", 
 	tags:["web", "peak"], 
-	size:ram(512)
+	size:ram(256)
 	])
 
 new Node([
 	name:"web2", 
 	tags:["web", "peak"], 
+	size:ram(256)
+	])
+
+new Node([
+	name:"web3",
+	tags:["web", "peak"],
+	size:ram(256)
+	])
+
+new Node([
+	name:"web4",
+	tags:["web", "peak"],
 	size:ram(256)
 	])

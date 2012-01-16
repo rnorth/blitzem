@@ -11,6 +11,7 @@ import org.blitzem.commands.CommandException;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.RunNodesException;
 import org.jclouds.compute.domain.*;
+import org.jclouds.compute.options.TemplateOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import static org.jclouds.compute.options.TemplateOptions.Builder.authorizePublicKey;
+import static org.jclouds.compute.options.TemplateOptions.Builder.*;
 
 /**
  * Model class for a server node.
@@ -70,7 +71,6 @@ public class Node implements TaggedAndNamedItem {
     /**
      * {@inheritDoc}
      */
-    @Override
     public Set<String> getNotificationSubjects() {
         return Sets.newHashSet();
     }
@@ -78,7 +78,6 @@ public class Node implements TaggedAndNamedItem {
     /**
      * {@inheritDoc}
      */
-    @Override
     public void notifyIsUp(TaggedAndNamedItem itemWhichIsUp, ExecutionContext executionContext) {
         // Don't care
     }
@@ -86,12 +85,13 @@ public class Node implements TaggedAndNamedItem {
     /**
      * {@inheritDoc}
      */
-    @Override
     public void notifyIsGoingDown(TaggedAndNamedItem itemWhichIsGoingDown, ExecutionContext executionContext) {
         // Don't care
     }
 
-    @Override
+    /** 
+     * {@inheritDoc}
+     */
     public boolean isUp(ExecutionContext executionContext) {
         return ! Node.findExistingNodesMatching(this, executionContext.getComputeService()).isEmpty();
     }
