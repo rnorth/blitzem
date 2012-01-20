@@ -84,15 +84,15 @@ public class RackspaceCloudLoadBalancer extends LoadBalancer {
 				
 				for (String address : nodeIPAddressesToAdd) {
 					builder.address(address);
+					builder.port(this.getNodePort());
+					nodeRequests.add(builder.build());
 				}
-				builder.port(this.getNodePort());
-				nodeRequests.add(builder.build());
 				
 				rsClient.getNodeClient(region).createNodesInLoadBalancer(nodeRequests, providerId);
 			}
 			
 			if (!nodeIPAddressesToRemove.isEmpty()) {
-				CONSOLE_LOG.debug("Removing IP Addresses {} from load balancer {}", nodeIPAddressesToRemove);
+				CONSOLE_LOG.debug("Removing IP Addresses {} from load balancer {}", nodeIPAddressesToRemove, this.getName());
 				Set<org.jclouds.cloudloadbalancers.domain.Node> nodesInLB = rsClient.getNodeClient(region).listNodes(providerId);
 				boolean atLeastOneNodeInLB = nodesInLB.size() > 1;
 				

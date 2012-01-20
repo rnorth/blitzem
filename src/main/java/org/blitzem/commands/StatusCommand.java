@@ -38,18 +38,19 @@ public class StatusCommand extends BaseCommand implements WholeEnvironmentComman
         CONSOLE_LOG.info("Fetching status of nodes and load balancers");
 
 		List<List<String>> table = Lists.newArrayList();
-		table.add(Arrays.asList("Node name", "Status", "IP Address", "Tags", "Location"));
+		table.add(Arrays.asList("Node name", "Status", "Public IP Address(es)", "Private IP Address(es)", "Tags", "Location"));
 
 		for (Node node : TaggedItemRegistry.getInstance().findMatching(null, Node.class)) {
 			Set<? extends NodeMetadata> liveNodes = Node.findExistingNodesMatching(node, computeService);
 			List row = null;
 			if (liveNodes.size() > 0) {
 				for (NodeMetadata liveNode : liveNodes) {
-					row = Lists.newArrayList( node.getName(), "UP", liveNode.getPublicAddresses().toString(),
-							node.getTags().toString(), "" + liveNode.getLocation().getIso3166Codes() );
+					row = Lists.newArrayList( node.getName(), "UP", liveNode.getPublicAddresses().toString(), 
+							liveNode.getPrivateAddresses().toString(), node.getTags().toString(), 
+							"" + liveNode.getLocation().getIso3166Codes() );
 				}
 			} else {
-				row = Lists.newArrayList( node.getName(), "DOWN", "n/a", node.getTags().toString(), "n/a" );
+				row = Lists.newArrayList( node.getName(), "DOWN", "n/a", "n/a", node.getTags().toString(), "n/a" );
 			}
 			table.add(row);
 		}
