@@ -165,6 +165,11 @@ public class LoadBalancer implements TaggedAndNamedItem {
 	public static Set<LoadBalancerMetadata> findExistingLoadBalancersMatching(LoadBalancer loadBalancer,
 			LoadBalancerService loadBalancerService) {
 		
+		if (loadBalancerService==null) {
+			CONSOLE_LOG.warn("Load balancer services have not been configured - cannot list available load balancers");
+			return Sets.newHashSet();
+		}
+		
 		Set<? extends LoadBalancerMetadata> loadBalancers = loadBalancerService.listLoadBalancers();
 		Set<LoadBalancerMetadata> matchingLoadBalancers = Sets.newHashSet();
 		

@@ -46,6 +46,11 @@ public class RackspaceCloudLoadBalancer extends LoadBalancer {
 	@Override
 	public void notifyIsGoingDown(TaggedAndNamedItem itemWhichIsGoingDown, ExecutionContext executionContext) {
 		super.notifyIsGoingDown(itemWhichIsGoingDown, executionContext);
+		
+		if (executionContext.getLoadBalancerService()==null) {
+			CONSOLE_LOG.warn("Load balancer services have not been configured - cannot modify load balancer nodes for {}", this.getName());
+			return;
+		}
 
 		Set<? extends NodeMetadata> nodeMetadatas = Node.findExistingNodesMatching((Node) itemWhichIsGoingDown,
 				executionContext.getComputeService());
@@ -64,6 +69,12 @@ public class RackspaceCloudLoadBalancer extends LoadBalancer {
 	
 	private void modifyNodesForLoadBalancer(ExecutionContext executionContext,
 			Set<String> nodeIPAddressesToAdd, Set<String> nodeIPAddressesToRemove) {
+		
+		if (executionContext.getLoadBalancerService()==null) {
+			CONSOLE_LOG.warn("Load balancer services have not been configured - cannot modify load balancer nodes for {}", this.getName());
+			return;
+		}
+		
 		RestContext<Object, Object> providerSpecificContext = executionContext.getLoadBalancerService().getContext()
 				.getProviderSpecificContext();
 		CloudLoadBalancersClient rsClient = CloudLoadBalancersClient.class.cast(providerSpecificContext.getApi());

@@ -13,6 +13,7 @@ import org.jclouds.loadbalancer.LoadBalancerService;
 import org.jclouds.loadbalancer.domain.LoadBalancerMetadata;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -37,42 +38,46 @@ public class StatusCommand extends BaseCommand implements WholeEnvironmentComman
 
         CONSOLE_LOG.info("Fetching status of nodes and load balancers");
 
-		List<List<String>> table = Lists.newArrayList();
-		table.add(Arrays.asList("Node name", "Status", "Public IP Address(es)", "Private IP Address(es)", "Tags", "Location"));
-
-		for (Node node : TaggedItemRegistry.getInstance().findMatching(null, Node.class)) {
-			Set<? extends NodeMetadata> liveNodes = Node.findExistingNodesMatching(node, computeService);
-			List row = null;
-			if (liveNodes.size() > 0) {
-				for (NodeMetadata liveNode : liveNodes) {
-					row = Lists.newArrayList( node.getName(), "UP", liveNode.getPublicAddresses().toString(), 
-							liveNode.getPrivateAddresses().toString(), node.getTags().toString(), 
-							"" + liveNode.getLocation().getIso3166Codes() );
-				}
-			} else {
-				row = Lists.newArrayList( node.getName(), "DOWN", "n/a", "n/a", node.getTags().toString(), "n/a" );
-			}
-			table.add(row);
-		}
-		System.out.println("\n\nNode status");
-		printTable(table, true);
+        if (computeService!=null) {
+        	List<List<String>> table = Lists.newArrayList();
+        	table.add(Arrays.asList("Node name", "Status", "Public IP Address(es)", "Private IP Address(es)", "Tags", "Location"));
+        	
+        	for (Node node : TaggedItemRegistry.getInstance().findMatching(null, Node.class)) {
+        		Set<? extends NodeMetadata> liveNodes = Node.findExistingNodesMatching(node, computeService);
+        		List row = null;
+        		if (liveNodes.size() > 0) {
+        			for (NodeMetadata liveNode : liveNodes) {
+        				row = Lists.newArrayList( node.getName(), "UP", liveNode.getPublicAddresses().toString(), 
+        						liveNode.getPrivateAddresses().toString(), node.getTags().toString(), 
+        						"" + liveNode.getLocation().getIso3166Codes() );
+        			}
+        		} else {
+        			row = Lists.newArrayList( node.getName(), "DOWN", "n/a", "n/a", node.getTags().toString(), "n/a" );
+        		}
+        		table.add(row);
+        	}
+        	System.out.println("\n\nNode status");
+        	printTable(table, true);
+        }
 		
-		table = Lists.newArrayList();
-		table.add(Arrays.asList("LB name", "Status", "IP Address", "Tags", "Applies to nodes tagged", "Type", "Location"));
-		for (LoadBalancer loadBalancer : TaggedItemRegistry.getInstance().findMatching(null, LoadBalancer.class)) {
-			Set<LoadBalancerMetadata> liveLBs = LoadBalancer.findExistingLoadBalancersMatching(loadBalancer, loadBalancerService);
-			List row = null;
-			if (liveLBs.size() > 0) {
-				for (LoadBalancerMetadata liveLB : liveLBs) {
-					row = Lists.newArrayList(loadBalancer.getName(), "UP", liveLB.getAddresses().toString(), loadBalancer.getTags().toString(), ""+loadBalancer.getAppliesToTag(), ""+liveLB.getType(), ""+liveLB.getLocation().getIso3166Codes());
-				}
-			} else {
-				row = Lists.newArrayList(loadBalancer.getName(), "DOWN", "n/a", loadBalancer.getTags().toString(), loadBalancer.getAppliesToTag(), "n/a", "n/a");
-			}
-			table.add(row);
-		}
-		System.out.println("\n\nLoad Balancer status");
-		printTable(table, true);
+        if (loadBalancerService!=null) {
+        	List<List<String>> table = Lists.newArrayList();
+        	table.add(Arrays.asList("LB name", "Status", "IP Address", "Tags", "Applies to nodes tagged", "Type", "Location"));
+        	for (LoadBalancer loadBalancer : TaggedItemRegistry.getInstance().findMatching(null, LoadBalancer.class)) {
+        		Set<LoadBalancerMetadata> liveLBs = LoadBalancer.findExistingLoadBalancersMatching(loadBalancer, loadBalancerService);
+        		List row = null;
+        		if (liveLBs.size() > 0) {
+        			for (LoadBalancerMetadata liveLB : liveLBs) {
+        				row = Lists.newArrayList(loadBalancer.getName(), "UP", liveLB.getAddresses().toString(), loadBalancer.getTags().toString(), ""+loadBalancer.getAppliesToTag(), ""+liveLB.getType(), ""+liveLB.getLocation().getIso3166Codes());
+        			}
+        		} else {
+        			row = Lists.newArrayList(loadBalancer.getName(), "DOWN", "n/a", loadBalancer.getTags().toString(), loadBalancer.getAppliesToTag(), "n/a", "n/a");
+        		}
+        		table.add(row);
+        	}
+        	System.out.println("\n\nLoad Balancer status");
+        	printTable(table, true);
+        }
 		
 	}
 

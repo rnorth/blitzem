@@ -72,7 +72,7 @@ public class BlitzemConsole {
 
         try {
 
-			if (command instanceof WholeEnvironmentCommand && computeService!=null && loadBalancerService!=null) {
+			if (command instanceof WholeEnvironmentCommand && (computeService!=null || loadBalancerService!=null)) {
 				CONSOLE_LOG.info("Applying command {} to whole environment", command.getClass().getSimpleName());
 				((WholeEnvironmentCommand) command).execute(executionContext);
 			} else if (command instanceof PerNodeCommand) {
@@ -161,7 +161,7 @@ public class BlitzemConsole {
 			CONSOLE_LOG.warn("No Cloud Load Balancers will be managed!");
 			
 		} else {
-			loadBalancerServiceContext = new LoadBalancerServiceContextFactory().createContext("cloudloadbalancers-uk", cloudComputeAccessKeyId, cloudComputeSecretKey,
+			loadBalancerServiceContext = new LoadBalancerServiceContextFactory().createContext(cloudLBProvider, cloudComputeAccessKeyId, cloudComputeSecretKey,
 					ImmutableSet.<Module> of(new JschSshClientModule(), new SLF4JLoggingModule()));
 		}
 
