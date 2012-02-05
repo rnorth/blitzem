@@ -1,6 +1,7 @@
 package org.blitzem.commands;
 
 import org.blitzem.model.ExecutionContext;
+import org.blitzem.provider.api.Driver;
 
 /**
  * A command to display help for using the Blitzem application.
@@ -10,7 +11,7 @@ import org.blitzem.model.ExecutionContext;
  */
 public class HelpCommand extends BaseCommand implements WholeEnvironmentCommand {
 
-	public void execute(ExecutionContext executionContext) throws CommandException {
+	public void execute(Driver driver) throws CommandException {
 		// TODO Auto-generated method stub
 		
 	}

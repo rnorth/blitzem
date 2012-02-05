@@ -1,18 +1,15 @@
 package org.blitzem.model;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import java.util.List;
+import java.util.Set;
+
 import org.blitzem.TaggedAndNamedItem;
 import org.blitzem.TaggedItemRegistry;
-import org.jclouds.compute.ComputeService;
-import org.jclouds.compute.domain.NodeMetadata;
-import org.jclouds.loadbalancer.LoadBalancerService;
-import org.jclouds.loadbalancer.domain.LoadBalancerMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.Set;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 /**
  * Model class for a Load Balancer.
@@ -113,136 +110,10 @@ public class LoadBalancer implements TaggedAndNamedItem {
 		this.appliesToTag = appliesToTag;
 	}
 
-	/**
-	 * @param executionContext
-	 * @param associatedNodes
-	 */
-	public void preUp(ExecutionContext executionContext, Iterable<Node> associatedNodes) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	/**
-	 * @param executionContext
-	 * @param associatedNodes
-	 */
-	public void up(ExecutionContext executionContext, Iterable<Node> associatedNodes) {
-
-        ComputeService computeService = executionContext.getComputeService();
-        LoadBalancerService loadBalancerService = executionContext.getLoadBalancerService();
-
-        Set<NodeMetadata> associatedNodeMetadata = Sets.newHashSet();
-		for (Node node : associatedNodes) {
-			associatedNodeMetadata.addAll(Node.findExistingNodesMatching(node, computeService));
-        }
-
-        loadBalancerService.createLoadBalancerInLocation(
-                null,
-                this.getName(),
-                this.getProtocol(),
-                this.getPort(),
-                this.getNodePort(),
-                associatedNodeMetadata);
-	}
-
-	/**
-	 * @param executionContext
-	 * @param associatedNodes
-	 */
-	public void postUp(ExecutionContext executionContext, Iterable<Node> associatedNodes) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-
-	
-
-	/**
-	 * @param loadBalancer
-	 * @param loadBalancerService
-	 * @return
-	 */
-	public static Set<LoadBalancerMetadata> findExistingLoadBalancersMatching(LoadBalancer loadBalancer,
-			LoadBalancerService loadBalancerService) {
-		
-		if (loadBalancerService==null) {
-			CONSOLE_LOG.warn("Load balancer services have not been configured - cannot list available load balancers");
-			return Sets.newHashSet();
-		}
-		
-		Set<? extends LoadBalancerMetadata> loadBalancers = loadBalancerService.listLoadBalancers();
-		Set<LoadBalancerMetadata> matchingLoadBalancers = Sets.newHashSet();
-		
-		for (LoadBalancerMetadata lbInstance : loadBalancers) {
-			final String name = lbInstance.getName();
-			if (name.equals(loadBalancer.getName())) {
-				matchingLoadBalancers.add(lbInstance);
-			}
-		}
-		
-		return matchingLoadBalancers;
-	}
-
-	/**
-	 * @param loadBalancerService
-	 * @param computeService
-	 */
-	public void preDown(LoadBalancerService loadBalancerService, ComputeService computeService) {
-		// no action
-	}
-
-	/**
-	 * @param loadBalancerService
-	 * @param computeService
-	 */
-	public void down(LoadBalancerService loadBalancerService, ComputeService computeService) {
-		
-		Set<LoadBalancerMetadata> existingLBs = LoadBalancer.findExistingLoadBalancersMatching(this, loadBalancerService);
-		
-		for (LoadBalancerMetadata existingLB : existingLBs) {
-			CONSOLE_LOG.info("Bringing down load balancer {}", existingLB.getName());
-			loadBalancerService.destroyLoadBalancer(existingLB.getId());
-			CONSOLE_LOG.info("Load balancer destroyed");
-		}
-	}
-
-	/**
-	 * @param loadBalancerService
-	 * @param computeService
-	 */
-	public void postDown(LoadBalancerService loadBalancerService, ComputeService computeService) {
-		// no action
-	}
-
 	/** 
 	 * {@inheritDoc}
 	 */
 	public Set<String> getNotificationSubjects() {
 		return Sets.newHashSet(appliesToTag);
-	}
-
-	/** 
-	 * {@inheritDoc}
-	 */
-	public void notifyIsUp(TaggedAndNamedItem itemWhichIsUp, ExecutionContext executionContext) {
-		if (isUp(executionContext)) {
-			CONSOLE_LOG.info("Load balancer {} being notified that {} is up", this, itemWhichIsUp);
-		}
-	}
-
-	/** 
-	 * {@inheritDoc}
-	 */
-	public void notifyIsGoingDown(TaggedAndNamedItem itemWhichIsGoingDown, ExecutionContext executionContext) {
-		if (isUp(executionContext)) {
-			CONSOLE_LOG.info("Load balancer {} being notified that {} is going down", this, itemWhichIsGoingDown);
-		}
-	}
-
-	/** 
-	 * {@inheritDoc}
-	 */
-	public boolean isUp(ExecutionContext executionContext) {
-		return ! LoadBalancer.findExistingLoadBalancersMatching(this, executionContext.getLoadBalancerService()).isEmpty();
 	}
 }

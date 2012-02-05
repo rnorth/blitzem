@@ -37,8 +37,7 @@ import java.util.Properties;
 public class BlitzemConsole {
 
 	private static final Logger CONSOLE_LOG = (Logger) LoggerFactory.getLogger(BlitzemConsole.class);
-	private static ComputeServiceContext computeServiceContext;
-	private static LoadBalancerServiceContext loadBalancerServiceContext;
+	public static ExecutionContext executionContext;
 
 	/**
 	 * @param args
@@ -64,50 +63,33 @@ public class BlitzemConsole {
 
 		loadContext();
 
-		ComputeService computeService = computeServiceContext!=null ? computeServiceContext.getComputeService() : null;
-		LoadBalancerService loadBalancerService = loadBalancerServiceContext!=null ? loadBalancerServiceContext.getLoadBalancerService() : null;
-
-        ExecutionContext executionContext = new ExecutionContext(computeService, loadBalancerService);
-
-
         try {
 
-			if (command instanceof WholeEnvironmentCommand && (computeService!=null || loadBalancerService!=null)) {
+			if (command instanceof WholeEnvironmentCommand) {
 				CONSOLE_LOG.info("Applying command {} to whole environment", command.getClass().getSimpleName());
-				((WholeEnvironmentCommand) command).execute(executionContext);
+				((WholeEnvironmentCommand) command).execute(executionContext.getDriver());
 			} else if (command instanceof PerNodeCommand) {
 				
-				if (computeService!=null) {
-					for (Node node : TaggedItemRegistry.getInstance().findMatching(command.getNoun(), Node.class)) {
-						CONSOLE_LOG.info("Applying command {} to node '{}'", command.getClass().getSimpleName(), node.getName());
-						((PerNodeCommand) command).execute(node, executionContext);
-					}
+				for (Node node : TaggedItemRegistry.getInstance().findMatching(command.getNoun(), Node.class)) {
+					CONSOLE_LOG.info("Applying command {} to node '{}'", command.getClass().getSimpleName(), node.getName());
+					((PerNodeCommand) command).execute(node, executionContext.getDriver());
 				}
-				
-				if (loadBalancerService!=null) {
-					for (LoadBalancer loadBalancer : TaggedItemRegistry.getInstance().findMatching(command.getNoun(), LoadBalancer.class)) {
-						CONSOLE_LOG.info("Applying command {} to load balancer '{}'", command.getClass().getSimpleName(),
-								loadBalancer.getName());
-						((PerLoadBalancerCommand) command).execute(loadBalancer, executionContext);
-					}
+			
+				for (LoadBalancer loadBalancer : TaggedItemRegistry.getInstance().findMatching(command.getNoun(), LoadBalancer.class)) {
+					CONSOLE_LOG.info("Applying command {} to load balancer '{}'", command.getClass().getSimpleName(),
+							loadBalancer.getName());
+					((PerLoadBalancerCommand) command).execute(loadBalancer, executionContext.getDriver());
 				}
 
-				if (computeService!=null && loadBalancerService!=null) {
-					// always display status
-					new StatusCommand().execute(executionContext);
-				}
+				// always display status
+				new StatusCommand().execute(executionContext.getDriver());
 			}
 
 		} catch (CommandException e) {
 			System.err.println("An unexpected error occurred: ");
 			e.printStackTrace(System.err);
 		} finally {
-			if (computeServiceContext!=null) {
-				computeServiceContext.close();
-			}
-			if (loadBalancerService!=null) {
-				loadBalancerServiceContext.close();
-			}
+			executionContext.close();
 		}
 
 	}
@@ -138,36 +120,10 @@ public class BlitzemConsole {
                 fileInputStream.close();
             }
         }
+        
+        executionContext = new ExecutionContext(cloudConfigProperties, cloudConfigFile);
 
-		String cloudComputeProvider = cloudConfigProperties.getProperty("compute-provider");
-		String cloudComputeAccessKeyId = cloudConfigProperties.getProperty("compute-accesskeyid");
-		String cloudComputeSecretKey = cloudConfigProperties.getProperty("compute-secretkey");
-		
-		if (cloudComputeProvider == null || cloudComputeAccessKeyId == null || cloudComputeSecretKey == null) {
-			CONSOLE_LOG.warn("Did not find expected compute-provider, compute-accesskeyid or compute-secretkey defined in " + cloudConfigFile);
-			CONSOLE_LOG.warn("No Cloud Compute nodes will be managed!");
-			
-		} else {
-			computeServiceContext = new ComputeServiceContextFactory().createContext(cloudComputeProvider, cloudComputeAccessKeyId, cloudComputeSecretKey,
-					ImmutableSet.<Module> of(new JschSshClientModule(), new SLF4JLoggingModule()));
-		}
-
-		String cloudLBProvider = cloudConfigProperties.getProperty("loadbalancer-provider");
-		String cloudLBAccessKeyId = cloudConfigProperties.getProperty("loadbalancer-accesskeyid");
-		String cloudLBSecretKey = cloudConfigProperties.getProperty("loadbalancer-secretkey");
-		
-		if (cloudLBProvider == null || cloudLBAccessKeyId == null || cloudLBSecretKey == null) {
-			CONSOLE_LOG.warn("Did not find expected loadbalancer-provider, loadbalancer-accesskeyid or loadbalancer-secretkey defined in " + cloudConfigFile);
-			CONSOLE_LOG.warn("No Cloud Load Balancers will be managed!");
-			
-		} else {
-			loadBalancerServiceContext = new LoadBalancerServiceContextFactory().createContext(cloudLBProvider, cloudComputeAccessKeyId, cloudComputeSecretKey,
-					ImmutableSet.<Module> of(new JschSshClientModule(), new SLF4JLoggingModule()));
-		}
-
-		
-
-		CONSOLE_LOG.info("Connected to Cloud Compute API as {}", cloudComputeAccessKeyId);
+		CONSOLE_LOG.info("Connected to Cloud API ");
 	}
 
 	/**

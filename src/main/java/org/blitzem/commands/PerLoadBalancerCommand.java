@@ -1,8 +1,7 @@
 package org.blitzem.commands;
 
-import org.blitzem.model.ExecutionContext;
-
 import org.blitzem.model.LoadBalancer;
+import org.blitzem.provider.api.Driver;
 
 /**
  * A specialization of {@link Command} which should be executed on every
@@ -18,10 +17,10 @@ public interface PerLoadBalancerCommand extends Command {
 	 * 
 	 * @param loadBalancer
 	 *            the load balancer to apply the command to
-	 * @param executionContext
+	 * @param driver
 	 *            to carry out the command with
 	 * @throws CommandException
 	 */
-	void execute(LoadBalancer loadBalancer, ExecutionContext executionContext) throws CommandException;
+	void execute(LoadBalancer loadBalancer, Driver driver) throws CommandException;
 
 }

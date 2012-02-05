@@ -3,6 +3,7 @@ package org.blitzem.commands;
 import org.blitzem.model.ExecutionContext;
 import org.blitzem.model.LoadBalancer;
 import org.blitzem.model.Node;
+import org.blitzem.provider.api.Driver;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.loadbalancer.LoadBalancerService;
@@ -25,18 +26,21 @@ public class DownCommand extends BaseCommand implements PerNodeCommand, PerLoadB
 	/** 
 	 * {@inheritDoc}
 	 */
-	public void execute(final Node node, ExecutionContext executionContext) throws CommandException {
+	public void execute(final Node node, Driver driver) throws CommandException {
 
-        ComputeService computeService = executionContext.getComputeService();
+        Set<LoadBalancer> lbsToNotify = node.findLoadBalancersToNotifyOfChange();
 
-        Set<? extends NodeMetadata> existingNodes = Node.findExistingNodesMatching(node, computeService);
-
-		if (existingNodes.isEmpty()) {
+        for (LoadBalancer lb : lbsToNotify) {
+        	if (driver.isUp(lb)) {
+    			CONSOLE_LOG.info("Load balancer {} being notified that {} is up", lb, node);
+    			driver.removeNodeFromLoadBalancer(node, lb);
+        	}
+        }
+		
+		if (! driver.isUp(node)) {
 			CONSOLE_LOG.info("Node does not exist");
         } else {
-			node.preDown(executionContext);
-			node.down(executionContext);
-			node.postDown(executionContext);
+        	driver.nodeDown(node);
 		}
 
 	}
@@ -44,19 +48,12 @@ public class DownCommand extends BaseCommand implements PerNodeCommand, PerLoadB
 	/** 
 	 * {@inheritDoc}
 	 */
-	public void execute(LoadBalancer loadBalancer, ExecutionContext executionContext) throws CommandException {
+	public void execute(LoadBalancer loadBalancer, Driver driver) throws CommandException {
 
-        ComputeService computeService = executionContext.getComputeService();
-        LoadBalancerService loadBalancerService = executionContext.getLoadBalancerService();
-
-        Set<LoadBalancerMetadata> existingLBs = LoadBalancer.findExistingLoadBalancersMatching(loadBalancer, loadBalancerService);
-
-		if (existingLBs.isEmpty()) {
+		if (! driver.isUp(loadBalancer)) {
 			CONSOLE_LOG.info("Load balancer does not exist");
         } else {
-			loadBalancer.preDown(loadBalancerService, computeService);
-			loadBalancer.down(loadBalancerService, computeService);
-			loadBalancer.postDown(loadBalancerService, computeService);
+			driver.loadBalancerDown(loadBalancer);
 		}
 	}
 }

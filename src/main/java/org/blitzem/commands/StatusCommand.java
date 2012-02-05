@@ -7,6 +7,7 @@ import org.blitzem.TaggedItemRegistry;
 import org.blitzem.model.ExecutionContext;
 import org.blitzem.model.LoadBalancer;
 import org.blitzem.model.Node;
+import org.blitzem.provider.api.Driver;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.loadbalancer.LoadBalancerService;
@@ -31,19 +32,15 @@ public class StatusCommand extends BaseCommand implements WholeEnvironmentComman
 	/**
 	 * {@inheritDoc}
 	 */
-	public void execute(ExecutionContext executionContext) {
-
-        ComputeService computeService = executionContext.getComputeService();
-        LoadBalancerService loadBalancerService = executionContext.getLoadBalancerService();
+	public void execute(Driver driver) {
 
         CONSOLE_LOG.info("Fetching status of nodes and load balancers");
 
-        if (computeService!=null) {
         	List<List<String>> table = Lists.newArrayList();
         	table.add(Arrays.asList("Node name", "Status", "Public IP Address(es)", "Private IP Address(es)", "Tags", "Location"));
         	
         	for (Node node : TaggedItemRegistry.getInstance().findMatching(null, Node.class)) {
-        		Set<? extends NodeMetadata> liveNodes = Node.findExistingNodesMatching(node, computeService);
+        		Set<? extends NodeMetadata> liveNodes = driver.getLoadMetadataForNodesMatching(node);
         		List row = null;
         		if (liveNodes.size() > 0) {
         			for (NodeMetadata liveNode : liveNodes) {
@@ -58,13 +55,11 @@ public class StatusCommand extends BaseCommand implements WholeEnvironmentComman
         	}
         	System.out.println("\n\nNode status");
         	printTable(table, true);
-        }
 		
-        if (loadBalancerService!=null) {
-        	List<List<String>> table = Lists.newArrayList();
+        	table.clear();
         	table.add(Arrays.asList("LB name", "Status", "IP Address", "Tags", "Applies to nodes tagged", "Type", "Location"));
         	for (LoadBalancer loadBalancer : TaggedItemRegistry.getInstance().findMatching(null, LoadBalancer.class)) {
-        		Set<LoadBalancerMetadata> liveLBs = LoadBalancer.findExistingLoadBalancersMatching(loadBalancer, loadBalancerService);
+        		Set<? extends LoadBalancerMetadata> liveLBs = driver.getLoadMetadataForLoadBalancersMatching(loadBalancer);
         		List row = null;
         		if (liveLBs.size() > 0) {
         			for (LoadBalancerMetadata liveLB : liveLBs) {
@@ -77,7 +72,6 @@ public class StatusCommand extends BaseCommand implements WholeEnvironmentComman
         	}
         	System.out.println("\n\nLoad Balancer status");
         	printTable(table, true);
-        }
 		
 	}
 

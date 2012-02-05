@@ -1,18 +1,17 @@
 package org.blitzem.commands;
 
-import com.google.common.collect.Sets;
+import java.util.Set;
+
 import org.blitzem.TaggedItemRegistry;
-import org.blitzem.model.ExecutionContext;
 import org.blitzem.model.LoadBalancer;
 import org.blitzem.model.Node;
-import org.jclouds.compute.ComputeService;
+import org.blitzem.provider.api.Driver;
 import org.jclouds.compute.domain.NodeMetadata;
-import org.jclouds.loadbalancer.LoadBalancerService;
 import org.jclouds.loadbalancer.domain.LoadBalancerMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Set;
+import com.google.common.collect.Sets;
 
 /**
  * Command to create a {@link Node} if it does not already exist.
@@ -27,10 +26,9 @@ public class UpCommand extends BaseCommand implements PerNodeCommand, PerLoadBal
 	/** 
 	 * {@inheritDoc}
 	 */
-	public void execute(final Node node, ExecutionContext executionContext) throws CommandException {
+	public void execute(final Node node, Driver driver) throws CommandException {
 
-        ComputeService computeService = executionContext.getComputeService();
-		Set<? extends NodeMetadata> existingNodes = Node.findExistingNodesMatching(node, computeService);
+		Set<? extends NodeMetadata> existingNodes = driver.getLoadMetadataForNodesMatching(node);
 
 		if (!existingNodes.isEmpty()) {
 
@@ -40,21 +38,24 @@ public class UpCommand extends BaseCommand implements PerNodeCommand, PerLoadBal
 			}
 			CONSOLE_LOG.info("Node already exists - IP Address(es): {}", publicAddresses);
         } else {
-			node.preUp(executionContext);
-			node.up(executionContext);
-			node.postUp(executionContext);
+			driver.nodeUp(node);
+			Set<LoadBalancer> lbsToNotify = node.findLoadBalancersToNotifyOfChange();
+
+	        for (LoadBalancer lb : lbsToNotify) {
+	        	if (driver.isUp(lb)) {
+        			CONSOLE_LOG.info("Load balancer {} being notified that {} is up", lb, node);
+        			driver.addNodeToLoadBalancer(node, lb);
+	        	}
+	        }
 		}
 	}
 
 	/** 
 	 * {@inheritDoc}
 	 */
-	public void execute(LoadBalancer loadBalancer, ExecutionContext executionContext) throws CommandException {
+	public void execute(LoadBalancer loadBalancer, Driver driver) throws CommandException {
 
-        LoadBalancerService loadBalancerService = executionContext.getLoadBalancerService();
-        ComputeService computeService = executionContext.getComputeService();
-
-        Set<? extends LoadBalancerMetadata> existingLBs = LoadBalancer.findExistingLoadBalancersMatching(loadBalancer, loadBalancerService);
+        Set<? extends LoadBalancerMetadata> existingLBs = driver.getLoadMetadataForLoadBalancersMatching(loadBalancer);
 		if (!existingLBs.isEmpty()) {
 
 			Set<String> publicAddresses = Sets.newHashSet();
@@ -65,9 +66,7 @@ public class UpCommand extends BaseCommand implements PerNodeCommand, PerLoadBal
         } else {
 			Iterable<Node> associatedNodes = TaggedItemRegistry.getInstance().findMatching(loadBalancer.getAppliesToTag(), Node.class);
 			
-			loadBalancer.preUp(executionContext, associatedNodes);
-			loadBalancer.up(executionContext, associatedNodes);
-			loadBalancer.postUp(executionContext, associatedNodes);
+			driver.loadBalancerUp(loadBalancer, associatedNodes);
 		}
 	}
 }
