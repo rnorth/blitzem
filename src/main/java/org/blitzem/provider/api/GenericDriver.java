@@ -4,7 +4,6 @@ import static org.jclouds.compute.options.TemplateOptions.Builder.authorizePubli
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Set;
 
 import org.blitzem.commands.CommandException;
@@ -77,8 +76,7 @@ public class GenericDriver implements Driver {
 	 * {@inheritDoc}
 	 */
 	public void removeNodeFromLoadBalancer(Node node, LoadBalancer loadBalancer) {
-		// TODO Auto-generated method stub
-
+		CONSOLE_LOG.warn("removeNodeFromLoadBalancer requested but not supported by GenericDriver (may not be supported by the cloud provider API)");
 	}
 
 	/** 
@@ -131,7 +129,7 @@ public class GenericDriver implements Driver {
 	 */
 	public void nodeDown(Node node) {
 
-        Set<? extends NodeMetadata> existingNodes = this.getLoadMetadataForNodesMatching(node);
+        Set<? extends NodeMetadata> existingNodes = this.getNodeMetadataForNodesMatching(node);
         
 		for (NodeMetadata existingNode : existingNodes) {
 			CONSOLE_LOG.info("Bringing down node {}", existingNode.getName());
@@ -157,7 +155,7 @@ public class GenericDriver implements Driver {
 	/** 
 	 * {@inheritDoc}
 	 */
-	public Set<? extends NodeMetadata> getLoadMetadataForNodesMatching(final Node node) {
+	public Set<? extends NodeMetadata> getNodeMetadataForNodesMatching(final Node node) {
         
 		return computeService.listNodesDetailsMatching(new Predicate<ComputeMetadata>() {
 
@@ -209,24 +207,33 @@ public class GenericDriver implements Driver {
 	 * {@inheritDoc}
 	 */
 	public void addNodeToLoadBalancer(Node node, LoadBalancer loadBalancer) {
-		// TODO Auto-generated method stub
+		CONSOLE_LOG.warn("removeNodeFromLoadBalancer requested but not supported by GenericDriver (may not be supported by the cloud provider API)");
 
 	}
 
+	/** 
+	 * {@inheritDoc}
+	 */
 	public boolean isUp(LoadBalancer loadBalancer) {
 		return ! this.getLoadMetadataForLoadBalancersMatching(loadBalancer).isEmpty();
 
 	}
 
+	/** 
+	 * {@inheritDoc}
+	 */
 	public boolean isUp(Node node) {
-		return ! this.getLoadMetadataForNodesMatching(node).isEmpty();
+		return ! this.getNodeMetadataForNodesMatching(node).isEmpty();
 	}
 
+	/** 
+	 * {@inheritDoc}
+	 */
 	public void loadBalancerUp(LoadBalancer loadBalancer, Iterable<Node> associatedNodes) {
 
         Set<NodeMetadata> associatedNodeMetadata = Sets.newHashSet();
 		for (Node node : associatedNodes) {
-			associatedNodeMetadata.addAll(this.getLoadMetadataForNodesMatching(node));
+			associatedNodeMetadata.addAll(this.getNodeMetadataForNodesMatching(node));
         }
 
         loadBalancerService.createLoadBalancerInLocation(
@@ -238,8 +245,12 @@ public class GenericDriver implements Driver {
                 associatedNodeMetadata);
 	}
 
+	/**
+	 * @param node
+	 * @return
+	 */
 	protected Set<String> getPublicIPAddressesForNode(Node node) {
-		Set<? extends NodeMetadata> nodeMetadatas = this.getLoadMetadataForNodesMatching(node);
+		Set<? extends NodeMetadata> nodeMetadatas = this.getNodeMetadataForNodesMatching(node);
 		Set<String> publicAddresses = Sets.newHashSet();
 	
 		for (NodeMetadata nodeMetadata : nodeMetadatas) {
@@ -248,8 +259,12 @@ public class GenericDriver implements Driver {
 		return publicAddresses;
 	}
 
+	/**
+	 * @param node
+	 * @return
+	 */
 	protected Set<String> getPrivateIPAddressesForNode(Node node) {
-		Set<? extends NodeMetadata> nodeMetadatas = this.getLoadMetadataForNodesMatching(node);
+		Set<? extends NodeMetadata> nodeMetadatas = this.getNodeMetadataForNodesMatching(node);
 		Set<String> privateAddresses = Sets.newHashSet();
 	
 		for (NodeMetadata nodeMetadata : nodeMetadatas) {
@@ -258,6 +273,9 @@ public class GenericDriver implements Driver {
 		return privateAddresses;
 	}
 
+	/** 
+	 * {@inheritDoc}
+	 */
 	public void close() {
 		if (null!=computeService && null!=computeService.getContext()) {
 			computeService.getContext().close();

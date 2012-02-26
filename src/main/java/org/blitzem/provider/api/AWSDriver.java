@@ -81,7 +81,7 @@ public class AWSDriver extends GenericDriver implements Driver {
 		List<Instance> instances = Lists.newArrayList();
 		Set<String> locations = Sets.newHashSet();
 		for (Node node : associatedNodes) {
-			Set<? extends NodeMetadata> nodesMatching = this.getLoadMetadataForNodesMatching(node);
+			Set<? extends NodeMetadata> nodesMatching = this.getNodeMetadataForNodesMatching(node);
 			for (NodeMetadata nodeMetadata : nodesMatching) {
 				instances.add(new Instance(nodeMetadata.getProviderId()));
 				locations.add(nodeMetadata.getLocation().getId());
@@ -128,7 +128,7 @@ public class AWSDriver extends GenericDriver implements Driver {
 		
 		// Add the node to the load balancer
 		List<Instance> instances = Lists.newArrayList();
-		Set<? extends NodeMetadata> nodesMatching = this.getLoadMetadataForNodesMatching(node);
+		Set<? extends NodeMetadata> nodesMatching = this.getNodeMetadataForNodesMatching(node);
 		for (NodeMetadata nodeMetadata : nodesMatching) {
 			instances.add(new Instance(nodeMetadata.getProviderId()));
 		}
@@ -146,7 +146,7 @@ public class AWSDriver extends GenericDriver implements Driver {
 	}
 
 	private String getInstanceSecurityGroupId(Node node) {
-		Set<? extends NodeMetadata> nodeMetadatas = getLoadMetadataForNodesMatching(node);
+		Set<? extends NodeMetadata> nodeMetadatas = getNodeMetadataForNodesMatching(node);
 		for (NodeMetadata nodeMetadata : nodeMetadatas) {
 			DescribeInstancesRequest describeInstancesRequest = new DescribeInstancesRequest()
 																		.withInstanceIds(nodeMetadata.getProviderId());

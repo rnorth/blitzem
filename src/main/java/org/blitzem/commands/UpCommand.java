@@ -28,7 +28,7 @@ public class UpCommand extends BaseCommand implements PerNodeCommand, PerLoadBal
 	 */
 	public void execute(final Node node, Driver driver) throws CommandException {
 
-		Set<? extends NodeMetadata> existingNodes = driver.getLoadMetadataForNodesMatching(node);
+		Set<? extends NodeMetadata> existingNodes = driver.getNodeMetadataForNodesMatching(node);
 
 		if (!existingNodes.isEmpty()) {
 

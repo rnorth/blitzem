@@ -15,7 +15,7 @@ public interface Driver {
 
 	Set<? extends LoadBalancerMetadata> getLoadMetadataForLoadBalancersMatching(LoadBalancer loadBalancer);
 
-	Set<? extends NodeMetadata> getLoadMetadataForNodesMatching(final Node node);
+	Set<? extends NodeMetadata> getNodeMetadataForNodesMatching(final Node node);
 
 	void loadBalancerUp(LoadBalancer loadBalancer, Iterable<Node> associatedNodes);
 	

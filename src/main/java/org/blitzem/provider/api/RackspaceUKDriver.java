@@ -1,7 +1,6 @@
 package org.blitzem.provider.api;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.Set;
 
 import org.blitzem.model.LoadBalancer;

@@ -40,7 +40,7 @@ public class StatusCommand extends BaseCommand implements WholeEnvironmentComman
         	table.add(Arrays.asList("Node name", "Status", "Public IP Address(es)", "Private IP Address(es)", "Tags", "Location"));
         	
         	for (Node node : TaggedItemRegistry.getInstance().findMatching(null, Node.class)) {
-        		Set<? extends NodeMetadata> liveNodes = driver.getLoadMetadataForNodesMatching(node);
+        		Set<? extends NodeMetadata> liveNodes = driver.getNodeMetadataForNodesMatching(node);
         		List row = null;
         		if (liveNodes.size() > 0) {
         			for (NodeMetadata liveNode : liveNodes) {

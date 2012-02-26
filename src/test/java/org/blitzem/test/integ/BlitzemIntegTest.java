@@ -11,6 +11,8 @@ import java.nio.charset.Charset;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,15 +53,15 @@ public class BlitzemIntegTest {
 		
 		final ByteArrayOutputStream stdoutBaos = new ByteArrayOutputStream();
 		
-		Timer t = new Timer();
-		t.schedule(new TimerTask() {
+		ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(5);
+		Runnable watchdog = new Runnable() {
 			
 			public void run() {
 				LOGGER.error("Process timed out!");
 				process.destroy();
 			}
-		}, 60000);
-		t.scheduleAtFixedRate(new TimerTask() {
+		};
+		Runnable logPipe = new Runnable() {
 
 			public void run() {
 				try {
@@ -72,13 +74,21 @@ public class BlitzemIntegTest {
 				}
 			}
 			
-		}, 10, 10);
+		};
+		executor.schedule(watchdog, 15 * 60, TimeUnit.SECONDS);
+		executor.scheduleAtFixedRate(logPipe, 1000, 1000, TimeUnit.MILLISECONDS);
 		process.waitFor();
 		Thread.sleep(50L);
-		t.cancel();
+		executor.shutdownNow();
 		
-		String stdout = stdoutBaos.toString();
-		String stderr = new String(ByteStreams.toByteArray(process.getErrorStream()));
+		String stdout = null;
+		String stderr = null;
+		try {
+			stdout = stdoutBaos.toString();
+			stderr = new String(ByteStreams.toByteArray(process.getErrorStream()));
+		} catch (IOException e) {
+			// swallow
+		}
 		
 		if (process.exitValue() != 0) {
 			LOGGER.warn("STDOUT: {}", stdout);
