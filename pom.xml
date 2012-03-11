@@ -139,6 +139,7 @@
 				        <include>**/*IntegTest.java</include>
 				    </includes>
 				    <forkMode>never</forkMode>
+				    <threadCount>1</threadCount>
 				</configuration>
 				<executions>
 				    <execution>
