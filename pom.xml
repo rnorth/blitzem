@@ -138,6 +138,7 @@
 				    <includes>
 				        <include>**/*IntegTest.java</include>
 				    </includes>
+				    <forkMode>never</forkMode>
 				</configuration>
 				<executions>
 				    <execution>
