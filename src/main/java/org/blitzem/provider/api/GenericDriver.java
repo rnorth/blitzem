@@ -116,7 +116,7 @@ public class GenericDriver implements Driver {
 			Set<? extends NodeMetadata> nodesInGroup = computeService.createNodesInGroup(node.getName(), 1, template);
 			for (NodeMetadata createdNode : nodesInGroup) {
 				String loginUsername = createdNode.getCredentials().getUser();
-				CONSOLE_LOG.info("Created node {} at {}. Standard login username is "+ loginUsername, node.getName(), createdNode.getPublicAddresses());
+				CONSOLE_LOG.info("SUCCESS - Created node {} at {}. Standard login username is "+ loginUsername, node.getName(), createdNode.getPublicAddresses());
 			}
 
 		} catch (RunNodesException e) {
@@ -134,7 +134,7 @@ public class GenericDriver implements Driver {
 		for (NodeMetadata existingNode : existingNodes) {
 			CONSOLE_LOG.info("Bringing down node {}", existingNode.getName());
 			computeService.destroyNode(existingNode.getId());
-			CONSOLE_LOG.info("Node destroyed");
+			CONSOLE_LOG.info("SUCCESS - Node destroyed");
 		}
 	}
 
@@ -148,7 +148,7 @@ public class GenericDriver implements Driver {
 		for (LoadBalancerMetadata existingLB : existingLBs) {
 			CONSOLE_LOG.info("Bringing down load balancer {}", existingLB.getName());
 			loadBalancerService.destroyLoadBalancer(existingLB.getId());
-			CONSOLE_LOG.info("Load balancer destroyed");
+			CONSOLE_LOG.info("SUCCESS - Load balancer destroyed");
 		}
 	}
 

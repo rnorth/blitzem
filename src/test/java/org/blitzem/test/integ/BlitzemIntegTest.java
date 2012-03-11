@@ -1,16 +1,13 @@
 package org.blitzem.test.integ;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -65,17 +62,23 @@ public class BlitzemIntegTest {
 
 			public void run() {
 				try {
-					ByteArrayOutputStream thisChunkBaos = new ByteArrayOutputStream();
-					ByteStreams.copy(process.getInputStream(), thisChunkBaos);
-					System.out.print(thisChunkBaos.toString());
+//					ByteArrayOutputStream thisChunkBaos = new ByteArrayOutputStream();
+					process.getInputStream().mark(Integer.MAX_VALUE);
+//					ByteStreams.copy(process.getInputStream(), thisChunkBaos);
+					ByteStreams.copy(process.getInputStream(), stdoutBaos);
+					process.getInputStream().reset();
+					ByteStreams.copy(process.getInputStream(), System.out);
+//					thisChunkBaos.writeTo(System.out);
+//					System.out.print(thisChunkBaos.toString());
+//					System.out.flush();
 					
-					ByteStreams.copy(new ByteArrayInputStream(thisChunkBaos.toByteArray()), stdoutBaos);
+//					ByteStreams.copy(new ByteArrayInputStream(thisChunkBaos.toByteArray()), stdoutBaos);
 				} catch (IOException e) {
 				}
 			}
 			
 		};
-		executor.schedule(watchdog, 15 * 60, TimeUnit.SECONDS);
+		executor.schedule(watchdog, 20 * 60, TimeUnit.SECONDS);
 		executor.scheduleAtFixedRate(logPipe, 1000, 1000, TimeUnit.MILLISECONDS);
 		process.waitFor();
 		Thread.sleep(50L);
@@ -103,7 +106,7 @@ public class BlitzemIntegTest {
 	}
 
 	protected static String execInDir(String command, String... args) throws Exception {
-		return exec("cd " + tempDir.getCanonicalPath()+"/blitzem*/ && " + command, args);
+		return exec("cd " + tempDir.getCanonicalPath()+"/ && " + command, args);
 	}
 	
 	

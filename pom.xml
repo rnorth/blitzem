@@ -52,6 +52,11 @@
 			<artifactId>cloudloadbalancers-uk</artifactId>
 			<version>${jclouds.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.fusesource.jansi</groupId>
+			<artifactId>jansi</artifactId>
+			<version>1.8</version>
+		</dependency>
 	</dependencies>
 
 	<properties>
@@ -133,7 +138,8 @@
 				    <includes>
 				        <include>**/*IntegTest.java</include>
 				    </includes>
-				   <forkMode>always</forkMode>
+				   <threadCount>1</threadCount>
+				   <parallel>classes</parallel>
 				</configuration>
 				<executions>
 				    <execution>

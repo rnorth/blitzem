@@ -14,11 +14,24 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
 
+/**
+ * @author Richard North <rich.north@gmail.com>
+ *
+ */
 public class RackspaceUKDriver extends GenericDriver implements Driver {
 
 	private static final Logger CONSOLE_LOG = LoggerFactory.getLogger(RackspaceUKDriver.class);
 	protected CloudLoadBalancersClient rsLBClient;
 
+	/**
+	 * @param cloudComputeAccessKeyId
+	 * @param cloudComputeSecretKey
+	 * @param cloudLBAccessKeyId
+	 * @param cloudLBSecretKey
+	 * @param cloudComputeProvider
+	 * @param cloudLBProvider
+	 * @param cloudConfigFile
+	 */
 	public RackspaceUKDriver(String cloudComputeAccessKeyId, String cloudComputeSecretKey, String cloudLBAccessKeyId,
 			String cloudLBSecretKey, String cloudComputeProvider, String cloudLBProvider, File cloudConfigFile) {
 		super(cloudComputeAccessKeyId, cloudComputeSecretKey, cloudLBAccessKeyId, cloudLBSecretKey, cloudComputeProvider, cloudLBProvider,
@@ -28,6 +41,9 @@ public class RackspaceUKDriver extends GenericDriver implements Driver {
 		this.rsLBClient = CloudLoadBalancersClient.class.cast(providerSpecificContext.getApi());
 	}
 
+	/** 
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void addNodeToLoadBalancer(Node node, LoadBalancer loadBalancer) {
 		CONSOLE_LOG.debug("Adding node {} to load balancer {}", node, loadBalancer);
@@ -52,6 +68,9 @@ public class RackspaceUKDriver extends GenericDriver implements Driver {
 		}
 	}
 	
+	/** 
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void removeNodeFromLoadBalancer(Node node, LoadBalancer loadBalancer) {
 		
@@ -80,10 +99,18 @@ public class RackspaceUKDriver extends GenericDriver implements Driver {
 		}
 	}
 
+	/**
+	 * @param loadBalancerMetadata
+	 * @return
+	 */
 	private Integer getProviderIdForLB(LoadBalancerMetadata loadBalancerMetadata) {
 		return Integer.valueOf(loadBalancerMetadata.getId().split("/")[1]);
 	}
 
+	/**
+	 * @param loadBalancerMetadata
+	 * @return
+	 */
 	private String getRegionForLB(LoadBalancerMetadata loadBalancerMetadata) {
 		return loadBalancerMetadata.getId().split("/")[0];
 	}

@@ -18,4 +18,9 @@ public interface Command {
 	 * @param noun the noun to set.
 	 */
 	void setNoun(String noun);
+	
+	/**
+	 * @return short (one-liner) help text for this command
+	 */
+	String getHelpSummary();
 }

@@ -69,4 +69,11 @@ public class UpCommand extends BaseCommand implements PerNodeCommand, PerLoadBal
 			driver.loadBalancerUp(loadBalancer, associatedNodes);
 		}
 	}
+
+	/** 
+	 * {@inheritDoc}
+	 */
+	public String getHelpSummary() {
+		return "Creates a new node or load balancer";
+	}
 }

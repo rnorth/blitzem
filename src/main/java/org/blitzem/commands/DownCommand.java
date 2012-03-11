@@ -32,7 +32,7 @@ public class DownCommand extends BaseCommand implements PerNodeCommand, PerLoadB
 
         for (LoadBalancer lb : lbsToNotify) {
         	if (driver.isUp(lb)) {
-    			CONSOLE_LOG.info("Load balancer {} being notified that {} is up", lb, node);
+    			CONSOLE_LOG.info("Load balancer {} being notified that {} is going down", lb, node);
     			driver.removeNodeFromLoadBalancer(node, lb);
         	}
         }
@@ -55,5 +55,12 @@ public class DownCommand extends BaseCommand implements PerNodeCommand, PerLoadB
         } else {
 			driver.loadBalancerDown(loadBalancer);
 		}
+	}
+
+	/** 
+	 * {@inheritDoc}
+	 */
+	public String getHelpSummary() {
+		return "Destroys a node or load balancer";
 	}
 }

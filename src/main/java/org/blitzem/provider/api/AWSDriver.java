@@ -93,7 +93,7 @@ public class AWSDriver extends GenericDriver implements Driver {
 		request.withAvailabilityZones(locations);
 		
 		CreateLoadBalancerResult balancer = awsLoadBalancerClient.createLoadBalancer(request);
-		CONSOLE_LOG.info("Created load balancer {}", balancer);
+		CONSOLE_LOG.info("SUCCESS - Created load balancer {}", balancer);
 		
 		for (Node node : associatedNodes) {
 			this.addNodeToLoadBalancer(node, loadBalancer);
@@ -105,6 +105,7 @@ public class AWSDriver extends GenericDriver implements Driver {
 		DeleteLoadBalancerRequest deleteLoadBalancerRequest = new DeleteLoadBalancerRequest(loadBalancer.getName());
 		CONSOLE_LOG.info("Bringing down load balancer {}", loadBalancer.getName());
 		awsLoadBalancerClient.deleteLoadBalancer(deleteLoadBalancerRequest);
+		CONSOLE_LOG.info("SUCCESS - Load balancer destroyed");
 	}
 	
 	@Override
@@ -140,7 +141,7 @@ public class AWSDriver extends GenericDriver implements Driver {
 		
 		awsLoadBalancerClient.registerInstancesWithLoadBalancer(registerRequest);
 		
-		CONSOLE_LOG.info("Registered node {} with load balancer", node.getName(), loadBalancer.getName());
+		CONSOLE_LOG.info("SUCCESS - Registered node {} with load balancer", node.getName(), loadBalancer.getName());
 		
 		
 	}

@@ -2,17 +2,6 @@
 
   <appender name="STDOUT"
     class="ch.qos.logback.core.ConsoleAppender">
-    <encoder class="org.blitzem.console.JAnsiLogConsoleEncoder">
-      <pattern>
-        %d{HH:mm:ss.SSS} blitzem - %msg%n
-     </pattern>
-    </encoder>
-  </appender>
-  
-  <appender name="DIAGNOSTIC"
-    class="ch.qos.logback.core.FileAppender">
-    <file>blitzem.log</file>
-    <append>true</append>
     <encoder>
       <pattern>
         %d{HH:mm:ss.SSS} [%thread] %-5level %logger{30}:%L - %msg%n
@@ -24,9 +13,8 @@
   <logger name="jclouds" level="ERROR" />
   <logger name="blitzem" level="DEBUG" />
 
-  <root level="INFO">
+  <root level="DEBUG">
     <appender-ref ref="STDOUT" />
-    <appender-ref ref="DIAGNOSTIC" />
   </root>
 
 </configuration>
