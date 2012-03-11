@@ -123,7 +123,7 @@ public class BlitzemConsole {
 	private static void loadContext() throws IOException {
 		File cloudConfigFile = new File(System.getProperty("user.home") + "/.blitzem/config.properties");
 		if (!cloudConfigFile.exists() && !cloudConfigFile.isFile()) {
-			CONSOLE_LOG.error("Could not find required cloud configuration properties file - expected at: " + cloudConfigFile);
+			CONSOLE_LOG.error("Could not find required cloud configuration properties file - expected at: " + cloudConfigFile.getCanonicalPath());
 			throw new RuntimeException();
 		}
 
@@ -163,8 +163,9 @@ public class BlitzemConsole {
 			CONSOLE_LOG.error("Failed to parse environment definition file: {} with error message:\n{}", sourceFile, e.getMessage());
 			throw new RuntimeException();
 		} catch (IOException e) {
-			CONSOLE_LOG.error("Could not open environment definition file: {} with error message:\n{}", sourceFile, Throwables
-					.getRootCause(e).getMessage());
+			CONSOLE_LOG.error("Could not open environment definition file expected at {}. Please ensure you are " +
+					"running the blitzem command from the directory containing the environment file, or use " +
+					"the --source=path argument to specify an alternative path", sourceFile);
 			throw new RuntimeException();
 		}
 	}
