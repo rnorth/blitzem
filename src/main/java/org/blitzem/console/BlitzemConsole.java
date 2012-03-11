@@ -123,7 +123,8 @@ public class BlitzemConsole {
 	private static void loadContext() throws IOException {
 		File cloudConfigFile = new File(System.getProperty("user.home") + "/.blitzem/config.properties");
 		if (!cloudConfigFile.exists() && !cloudConfigFile.isFile()) {
-			CONSOLE_LOG.error("Could not find required cloud configuration properties file - expected at: " + cloudConfigFile.getCanonicalPath());
+			CONSOLE_LOG.error("Could not find required cloud configuration properties file - expected at: " + cloudConfigFile.getCanonicalPath() + "\n" +
+					"Please ensure this file is in place, if necessary using the template in docs/config.properties.template");
 			throw new RuntimeException();
 		}
 

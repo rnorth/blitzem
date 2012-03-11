@@ -1,0 +1,14 @@
+# config.properties template (created for blitzem version ${project.version})
+
+# Valid values: cloudservers-uk, aws-ec2
+compute-provider=
+compute-accesskeyid=
+compute-secretkey=
+
+# Valid values: cloudloadbalancers-uk, aws-ec2
+loadbalancer-provider=
+loadbalancer-accesskeyid=
+loadbalancer-secretkey=
+
+# Valid values: rackspace-uk, aws
+provider=rackspace-uk

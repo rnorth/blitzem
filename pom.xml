@@ -138,8 +138,6 @@
 				    <includes>
 				        <include>**/*IntegTest.java</include>
 				    </includes>
-				   <threadCount>1</threadCount>
-				   <parallel>classes</parallel>
 				</configuration>
 				<executions>
 				    <execution>
