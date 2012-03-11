@@ -79,13 +79,13 @@ public class ExecutionContext {
 			 * Guava exceptions are already formatted, but not in a way we want.
 			 * We unpack and reformat.
 			 */
-			Set<String> causes = Sets.newHashSet();
+			Set<String> causes = Sets.newLinkedHashSet();
 			for (Message m : e.getErrorMessages()) {
 				final Throwable rootCause = Throwables.getRootCause(m.getCause());
 				causes.add(rootCause.toString());
 			}
 			CONSOLE_LOG.error("An unexpected error occurred while connecting to the Cloud API: " + causes);
-			throw new RuntimeException();
+			throw new RuntimeException(causes.toString());
 		}
 	}
 

@@ -2,10 +2,12 @@ package org.blitzem.test.integ;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Set;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -23,6 +25,7 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.Sets;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
+import com.google.gson.internal.Streams;
 
 public class BlitzemIntegTest {
 
@@ -62,17 +65,11 @@ public class BlitzemIntegTest {
 
 			public void run() {
 				try {
-//					ByteArrayOutputStream thisChunkBaos = new ByteArrayOutputStream();
 					process.getInputStream().mark(Integer.MAX_VALUE);
-//					ByteStreams.copy(process.getInputStream(), thisChunkBaos);
 					ByteStreams.copy(process.getInputStream(), stdoutBaos);
 					process.getInputStream().reset();
 					ByteStreams.copy(process.getInputStream(), System.out);
-//					thisChunkBaos.writeTo(System.out);
-//					System.out.print(thisChunkBaos.toString());
-//					System.out.flush();
-					
-//					ByteStreams.copy(new ByteArrayInputStream(thisChunkBaos.toByteArray()), stdoutBaos);
+					System.out.flush();
 				} catch (IOException e) {
 				}
 			}

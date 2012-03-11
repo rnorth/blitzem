@@ -98,7 +98,7 @@ public class BlitzemConsole {
 			}
 
 		} catch (RuntimeException e) {
-			CONSOLE_LOG.error("An unexpected error occurred", e);
+			CONSOLE_LOG.error("An unexpected error occurred: \n{}", e.getMessage());
 			// Have to call exit in case another thread is holding the app open (e.g. JClouds spawns some)
 			System.exit(1);
 		} finally {
