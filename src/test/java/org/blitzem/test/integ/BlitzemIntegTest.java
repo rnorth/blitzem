@@ -1,6 +1,8 @@
 package org.blitzem.test.integ;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +15,6 @@ import java.util.regex.Pattern;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -34,7 +35,7 @@ public class BlitzemIntegTest extends ShellIntegTestBase {
 	
 	@Parameters
 	public static Collection<Object[]> config() {
-		Object[][] config = new Object[][] { { HOME + "/.blitzem/rackspace-uk.properties" }, { HOME + "/.blitzem/aws.properties" }}; 
+		Object[][] config = new Object[][] { /*{ HOME + "/.blitzem/rackspace-uk.properties" },*/ { HOME + "/.blitzem/aws.properties" }}; 
 		return Arrays.asList(config);
 	}
 	
@@ -76,14 +77,24 @@ public class BlitzemIntegTest extends ShellIntegTestBase {
 		String loadBalancerIpAddress = matcher.group(1);
 		
 		URL loadBalancerUrl = new URL("http", loadBalancerIpAddress, 80, "");
-		System.out.println(loadBalancerUrl);
+		LOGGER.info("Trying to fetch representative content from load balancer {}", loadBalancerUrl);
 		Set<String> contentSeen = Sets.newHashSet();
-		while (contentSeen.size()<4) {
-			String content = new String(ByteStreams.toByteArray((java.io.InputStream) loadBalancerUrl.openStream()));
-			contentSeen.add(content);
-			Thread.sleep(100L);
+		int attempts = 0;
+		int failCount = 0;
+		while (contentSeen.size()<4 && ++attempts < 100) {
+			try {
+				String content = new String(ByteStreams.toByteArray((java.io.InputStream) loadBalancerUrl.openStream()));
+				contentSeen.add(content);
+			} catch (IOException e) {
+				if (++failCount > 100) {
+					fail("Failed to connect to " + loadBalancerUrl + " 100 times");
+				}
+				Thread.sleep(1000L);
+			}
+			Thread.sleep(10L);
 		}
-		System.out.println(contentSeen);
+		LOGGER.info("Saw the following responses: {}", contentSeen);
+		assertEquals(4, contentSeen.size());
 	}
 	
 	@After

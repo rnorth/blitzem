@@ -1,5 +1,7 @@
 package org.blitzem.commands;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -11,11 +13,14 @@ import org.blitzem.provider.api.Driver;
 import org.blitzem.util.Table;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.loadbalancer.domain.LoadBalancerMetadata;
+import org.jclouds.util.InetAddresses2;
 import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.Logger;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.common.net.InetAddresses;
 
 /**
  * Command to display status of the environment in tabular format.
@@ -61,7 +66,17 @@ public class StatusCommand extends BaseCommand implements WholeEnvironmentComman
         		List row = null;
         		if (liveLBs.size() > 0) {
         			for (LoadBalancerMetadata liveLB : liveLBs) {
-        				row = Lists.newArrayList(loadBalancer.getName(), "UP", liveLB.getAddresses().toString(), loadBalancer.getTags().toString(), ""+loadBalancer.getAppliesToTag(), ""+liveLB.getType(), ""+liveLB.getLocation().getIso3166Codes());
+        				
+        				Set<String> ipAddresses = Sets.newHashSet();
+        				for (String fqdn : liveLB.getAddresses()) {
+        					try {
+        						ipAddresses.add( InetAddresses.toAddrString(InetAddress.getByName(fqdn)) );
+							} catch (UnknownHostException e) {
+								CONSOLE_LOG.error("Couldn't resolve an IP address for load balancer {} (hostname was {})", loadBalancer, fqdn);
+							}
+        				}
+        				
+        				row = Lists.newArrayList(loadBalancer.getName(), "UP", ipAddresses.toString(), loadBalancer.getTags().toString(), ""+loadBalancer.getAppliesToTag(), ""+liveLB.getType(), ""+liveLB.getLocation().getIso3166Codes());
         			}
         		} else {
         			row = Lists.newArrayList(loadBalancer.getName(), "DOWN", "n/a", loadBalancer.getTags().toString(), loadBalancer.getAppliesToTag(), "n/a", "n/a");
