@@ -25,6 +25,7 @@ import com.amazonaws.services.ec2.model.CreateSecurityGroupResult;
 import com.amazonaws.services.ec2.model.DescribeInstanceAttributeRequest;
 import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
 import com.amazonaws.services.ec2.model.DescribeSecurityGroupsRequest;
+import com.amazonaws.services.ec2.model.DescribeSecurityGroupsResult;
 import com.amazonaws.services.ec2.model.GroupIdentifier;
 import com.amazonaws.services.ec2.model.IpPermission;
 import com.amazonaws.services.ec2.model.Reservation;
@@ -118,14 +119,18 @@ public class AWSDriver extends GenericDriver implements Driver {
 		userIdGroupPair.setUserId("amazon-elb");
 		userIdGroupPair.setGroupName("amazon-elb-sg");
 		Collection<UserIdGroupPair> userIdGroupPairs = Lists.newArrayList(userIdGroupPair);
+		String instanceGroupId = getInstanceSecurityGroupId(node);
+		
 		ipPermissions.setUserIdGroupPairs(userIdGroupPairs );
 		ipPermissions.setFromPort(loadBalancer.getNodePort());
 		ipPermissions.setToPort(loadBalancer.getNodePort());
-		String instanceGroupId = getInstanceSecurityGroupId(node);
-		AuthorizeSecurityGroupIngressRequest ingressRequest = new AuthorizeSecurityGroupIngressRequest()
-																	.withIpPermissions(ipPermissions)
-																	.withGroupId(instanceGroupId );
-		ec2Client.authorizeSecurityGroupIngress(ingressRequest);
+
+		if (! isPermissionAlreadyInPlace(instanceGroupId, ipPermissions)) {
+			AuthorizeSecurityGroupIngressRequest ingressRequest = new AuthorizeSecurityGroupIngressRequest()
+																			.withIpPermissions(ipPermissions)
+																			.withGroupId(instanceGroupId);
+			ec2Client.authorizeSecurityGroupIngress(ingressRequest);
+		}
 		
 		// Add the node to the load balancer
 		List<Instance> instances = Lists.newArrayList();
@@ -144,6 +149,28 @@ public class AWSDriver extends GenericDriver implements Driver {
 		CONSOLE_LOG.info("SUCCESS - Registered node {} with load balancer", node.getName(), loadBalancer.getName());
 		
 		
+	}
+
+	/**
+	 * Check whether an existing security group already has a permission defined
+	 * 
+	 * @param securityGroupId
+	 * @param permissionToCheck
+	 * @return
+	 */
+	private boolean isPermissionAlreadyInPlace(String securityGroupId, IpPermission permissionToCheck) {
+		DescribeSecurityGroupsRequest describeSecurityGroupsRequest = new DescribeSecurityGroupsRequest();
+		describeSecurityGroupsRequest.setGroupIds(Lists.newArrayList(securityGroupId));
+		DescribeSecurityGroupsResult securityGroups = ec2Client.describeSecurityGroups(describeSecurityGroupsRequest);
+		
+		for (SecurityGroup group : securityGroups.getSecurityGroups()) {
+			for (IpPermission existingPermission : group.getIpPermissions()) {
+				if (existingPermission.equals(permissionToCheck)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	private String getInstanceSecurityGroupId(Node node) {
