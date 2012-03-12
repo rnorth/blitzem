@@ -47,6 +47,11 @@
             <outputDirectory>examples</outputDirectory>
         </fileSet>
         <fileSet>
+            <directory>src/main/assembly/docs</directory>
+            <outputDirectory>docs</outputDirectory>
+            <filtered>true</filtered>
+        </fileSet>
+        <fileSet>
             <directory></directory>
             <outputDirectory></outputDirectory>
             <includes>

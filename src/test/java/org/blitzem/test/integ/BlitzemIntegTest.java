@@ -71,7 +71,7 @@ public class BlitzemIntegTest extends ShellIntegTestBase {
 		
 		execInDir("bin/blitzem --source=examples/load_balanced/environment.groovy up");
 		stdout = execInDir("bin/blitzem --source=examples/load_balanced/environment.groovy status");
-		Matcher matcher = Pattern.compile(".*web-lb1\\s+UP\\s+\\[([\\d\\.]+).*", Pattern.MULTILINE + Pattern.DOTALL).matcher(stdout);
+		Matcher matcher = Pattern.compile(".*web-lb1\\s+UP\\s+\\[([\\w\\d\\.]+).*", Pattern.MULTILINE + Pattern.DOTALL).matcher(stdout);
 		assertTrue(matcher.matches());
 		String loadBalancerIpAddress = matcher.group(1);
 		
