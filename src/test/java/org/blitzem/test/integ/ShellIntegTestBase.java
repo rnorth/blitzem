@@ -16,9 +16,9 @@ import com.google.common.io.Files;
 public class ShellIntegTestBase {
 	
 	static final Logger LOGGER = LoggerFactory.getLogger(ShellIntegTestBase.class);
-	static File tempDir;
+	File tempDir;
 	
-	protected static String exec(String commandTemplate, String... args) throws Exception {
+	protected String exec(String commandTemplate, String... args) throws Exception {
 		String command = String.format(commandTemplate.replace("{}", "%s"), args);
 		
 		File tempScript = File.createTempFile("test-script", ".sh");
@@ -82,12 +82,7 @@ public class ShellIntegTestBase {
 		return stdout;
 	}
 
-	protected static String execInDir(String command, String... args) throws Exception {
+	protected String execInDir(String command, String... args) throws Exception {
 		return exec("cd " + tempDir.getCanonicalPath()+"/ && " + command, args);
 	}
-
-	public ShellIntegTestBase() {
-		super();
-	}
-
 }

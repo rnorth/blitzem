@@ -42,8 +42,8 @@ public class BlitzemIntegTest extends ShellIntegTestBase {
 		this.configPath = configPath;
 	}
 	
-	@BeforeClass
-	public static void unpackAssembly() throws Exception {
+	@Before
+	public void unpackAssembly() throws Exception {
 		
 		// Extract blitzem
 		tempDir = Files.createTempDir();
