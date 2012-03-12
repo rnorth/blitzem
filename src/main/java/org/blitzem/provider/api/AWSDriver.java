@@ -165,7 +165,21 @@ public class AWSDriver extends GenericDriver implements Driver {
 		
 		for (SecurityGroup group : securityGroups.getSecurityGroups()) {
 			for (IpPermission existingPermission : group.getIpPermissions()) {
-				if (existingPermission.equals(permissionToCheck)) {
+				
+				boolean permissionAppliesToSameGroup = false;
+				for (UserIdGroupPair existingPermissionGroupPair : existingPermission.getUserIdGroupPairs()) {
+					for (UserIdGroupPair permissionToCheckGroupPair : permissionToCheck.getUserIdGroupPairs()) {
+						if (existingPermissionGroupPair.getGroupName().equals(permissionToCheckGroupPair.getGroupName())) {
+							permissionAppliesToSameGroup = true;
+						}
+					}
+				}
+				
+				if (	existingPermission.getFromPort().equals(permissionToCheck.getFromPort())
+					&&	existingPermission.getToPort().equals(permissionToCheck.getToPort())
+					&&	permissionAppliesToSameGroup
+					) {
+					
 					return true;
 				}
 			}
