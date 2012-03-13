@@ -146,6 +146,7 @@
 				    <forkMode>never</forkMode>
 				    <threadCount>1
 				    </threadCount>
+				    <redirectTestOutputToFile>true</redirectTestOutputToFile>
 				</configuration>
 				<executions>
 				    <execution>

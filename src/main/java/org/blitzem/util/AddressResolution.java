@@ -13,7 +13,7 @@ import org.xbill.DNS.Address;
  */
 public class AddressResolution {
 
-	private static final long TIMEOUT = 120 * 1000L;
+	private static final long TIMEOUT = 10 * 60 * 1000L;
 	private static final long INTERVAL = 1000L;
 
 	/**

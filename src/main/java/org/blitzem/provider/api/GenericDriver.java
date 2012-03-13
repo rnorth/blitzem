@@ -168,7 +168,7 @@ public class GenericDriver implements Driver {
             		name = computeService.getNodeMetadata(arg0.getId()).getGroup();
             	}
 
-                if (name!=null && name.contains("-")) {
+                if (name.contains("-")) {
                     String trimmedName = name.substring(0, name.lastIndexOf('-'));
                     return trimmedName.equals(node.getName()) && isUp;
                 } else {

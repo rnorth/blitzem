@@ -35,6 +35,7 @@ public class ShellIntegTestBase {
 		final Process process = pb.start();
 		
 		final ByteArrayOutputStream stdoutBaos = new ByteArrayOutputStream();
+		final ByteArrayOutputStream stderrBaos = new ByteArrayOutputStream();
 		
 		ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(5);
 		Runnable watchdog = new Runnable() {
@@ -53,6 +54,8 @@ public class ShellIntegTestBase {
 					process.getInputStream().reset();
 					copyAvailableBytes(process.getInputStream(), System.out);
 					System.out.flush();
+					
+					copyAvailableBytes(process.getErrorStream(), stderrBaos);
 				} catch (IOException e) {
 				}
 			}
@@ -66,12 +69,8 @@ public class ShellIntegTestBase {
 		
 		String stdout = null;
 		String stderr = null;
-		try {
-			stdout = stdoutBaos.toString();
-			stderr = new String(ByteStreams.toByteArray(process.getErrorStream()));
-		} catch (IOException e) {
-			// swallow
-		}
+		stdout = stdoutBaos.toString();
+		stderr = stderrBaos.toString();
 		
 		if (process.exitValue() != 0) {
 			LOGGER.warn("STDOUT: {}", stdout);

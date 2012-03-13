@@ -69,8 +69,8 @@ public class AWSWrappedLoadBalancerMetadata implements LoadBalancerMetadata {
 	 */
 	public int compareTo(ResourceMetadata<LoadBalancerType> o) {
 		
-		if (o instanceof AWSWrappedLoadBalancerMetadata) {
-			return description.equals((AWSWrappedLoadBalancerMetadata) o) ? 0 : -1;
+		if (o instanceof LoadBalancerDescription) {
+			return description.equals((LoadBalancerDescription) o) ? 0 : -1;
 		}
 		
 		return 1;
