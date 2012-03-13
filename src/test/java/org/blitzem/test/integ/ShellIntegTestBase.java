@@ -3,6 +3,9 @@ package org.blitzem.test.integ;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -46,17 +49,17 @@ public class ShellIntegTestBase {
 			public void run() {
 				try {
 					process.getInputStream().mark(Integer.MAX_VALUE);
-					ByteStreams.copy(process.getInputStream(), stdoutBaos);
+					copyAvailableBytes(process.getInputStream(), stdoutBaos);
 					process.getInputStream().reset();
-					ByteStreams.copy(process.getInputStream(), System.out);
+					copyAvailableBytes(process.getInputStream(), System.out);
 					System.out.flush();
 				} catch (IOException e) {
 				}
 			}
 			
 		};
-		executor.schedule(watchdog, 20 * 60, TimeUnit.SECONDS);
-		executor.scheduleAtFixedRate(logPipe, 1000, 1000, TimeUnit.MILLISECONDS);
+		executor.schedule(watchdog, 20, TimeUnit.MINUTES);
+		executor.scheduleAtFixedRate(logPipe, 10, 10, TimeUnit.MILLISECONDS);
 		process.waitFor();
 		Thread.sleep(50L);
 		executor.shutdownNow();
@@ -80,6 +83,17 @@ public class ShellIntegTestBase {
 		LOGGER.debug("STDERR: {}", stderr);
 		
 		return stdout;
+	}
+
+	protected void copyAvailableBytes(InputStream inputStream, OutputStream outputStream) {
+		try {
+			byte[] bytes = new byte[inputStream.available()];
+			int bytesRead = inputStream.read(bytes);
+			
+			outputStream.write(bytes, 0, bytesRead);
+		} catch (IOException e) {
+			// Swallow - can't do anything with this
+		}
 	}
 
 	protected String execInDir(String command, String... args) throws Exception {

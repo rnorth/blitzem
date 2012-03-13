@@ -6,11 +6,18 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 /**
+ * Utility class to support textual rendering of tables to STDOUT.
+ * 
  * @author Richard North <rich.north@gmail.com>
  *
  */
 public class Table {
 
+	/**
+	 * Utility class.
+	 */
+	private Table() {}
+	
 	/**
 	 * Print out information in tabular format. Adapted from {@see http://stackoverflow
 	 * .com/questions/275338/java-print-a-2d-string-array-as-a-right

@@ -7,4 +7,4 @@ if [ "$(which java)" = "" ] ; then
     exit 1;
 fi
 
-java -jar $BLITZEM_HOME/lib/${project.artifactId}-${project.version}.jar $@
+java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n -jar $BLITZEM_HOME/lib/${project.artifactId}-${project.version}.jar $@

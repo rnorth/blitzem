@@ -10,11 +10,13 @@ import org.blitzem.TaggedItemRegistry;
 import org.blitzem.model.LoadBalancer;
 import org.blitzem.model.Node;
 import org.blitzem.provider.api.Driver;
+import org.blitzem.util.AddressResolution;
 import org.blitzem.util.Table;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.loadbalancer.domain.LoadBalancerMetadata;
 import org.jclouds.util.InetAddresses2;
 import org.slf4j.LoggerFactory;
+import org.xbill.DNS.Address;
 
 import ch.qos.logback.classic.Logger;
 
@@ -66,17 +68,8 @@ public class StatusCommand extends BaseCommand implements WholeEnvironmentComman
         		List row = null;
         		if (liveLBs.size() > 0) {
         			for (LoadBalancerMetadata liveLB : liveLBs) {
-        				
-        				Set<String> ipAddresses = Sets.newHashSet();
-        				for (String fqdn : liveLB.getAddresses()) {
-        					try {
-        						ipAddresses.add( InetAddresses.toAddrString(InetAddress.getByName(fqdn)) );
-							} catch (UnknownHostException e) {
-								CONSOLE_LOG.error("Couldn't resolve an IP address for load balancer {} (hostname was {})", loadBalancer, fqdn);
-							}
-        				}
-        				
-        				row = Lists.newArrayList(loadBalancer.getName(), "UP", ipAddresses.toString(), loadBalancer.getTags().toString(), ""+loadBalancer.getAppliesToTag(), ""+liveLB.getType(), ""+liveLB.getLocation().getIso3166Codes());
+
+        				row = Lists.newArrayList(loadBalancer.getName(), "UP", liveLB.getAddresses().toString(), loadBalancer.getTags().toString(), ""+loadBalancer.getAppliesToTag(), ""+liveLB.getType(), ""+liveLB.getLocation().getIso3166Codes());
         			}
         		} else {
         			row = Lists.newArrayList(loadBalancer.getName(), "DOWN", "n/a", loadBalancer.getTags().toString(), loadBalancer.getAppliesToTag(), "n/a", "n/a");

@@ -84,7 +84,7 @@ public class BlitzemIntegTest extends ShellIntegTestBase {
 		while (contentSeen.size()<4 && ++attempts < 100) {
 			try {
 				String content = new String(ByteStreams.toByteArray((java.io.InputStream) loadBalancerUrl.openStream()));
-				contentSeen.add(content);
+				contentSeen.add(content.trim());
 			} catch (IOException e) {
 				if (++failCount > 100) {
 					fail("Failed to connect to " + loadBalancerUrl + " 100 times");

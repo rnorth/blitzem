@@ -8,13 +8,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.blitzem.commands.CommandException;
 import org.blitzem.model.LoadBalancer;
 import org.blitzem.model.Node;
+import org.blitzem.util.AddressResolution;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.domain.Location;
 import org.jclouds.loadbalancer.domain.LoadBalancerMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xbill.DNS.Address;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -43,6 +46,7 @@ import com.amazonaws.services.elasticloadbalancing.model.RegisterInstancesWithLo
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.net.InetAddresses;
 
 
 /**
@@ -94,7 +98,16 @@ public class AWSDriver extends GenericDriver implements Driver {
 		request.withAvailabilityZones(locations);
 		
 		CreateLoadBalancerResult balancer = awsLoadBalancerClient.createLoadBalancer(request);
-		CONSOLE_LOG.info("SUCCESS - Created load balancer {}", balancer);
+		
+		String balancerIpAddress;
+		try {
+			balancerIpAddress = InetAddresses.toAddrString(AddressResolution.blockingResolveHostname(balancer.getDNSName()));
+		} catch (UnknownHostException e) {
+			CONSOLE_LOG.error("Couldn't resolve an IP address for load balancer {} (hostname was {})", loadBalancer, balancer.getDNSName());
+			throw new RuntimeException("Load balancer name resolution problem", e);
+		}
+		
+		CONSOLE_LOG.info("SUCCESS - Created load balancer {} ({})", balancer.getDNSName(), balancerIpAddress);
 		
 		for (Node node : associatedNodes) {
 			this.addNodeToLoadBalancer(node, loadBalancer);
