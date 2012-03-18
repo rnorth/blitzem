@@ -4,6 +4,7 @@ import static org.jclouds.compute.options.TemplateOptions.Builder.authorizePubli
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
 import org.blitzem.commands.CommandException;
@@ -26,6 +27,8 @@ import org.jclouds.loadbalancer.LoadBalancerServiceContext;
 import org.jclouds.loadbalancer.LoadBalancerServiceContextFactory;
 import org.jclouds.loadbalancer.domain.LoadBalancerMetadata;
 import org.jclouds.logging.slf4j.config.SLF4JLoggingModule;
+import org.jclouds.scriptbuilder.domain.Statement;
+import org.jclouds.scriptbuilder.domain.StatementList;
 import org.jclouds.ssh.jsch.config.JschSshClientModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Charsets;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.google.inject.Module;
@@ -98,9 +102,11 @@ public class GenericDriver implements Driver {
 			throw new RuntimeException(e);
 		}
 		
+		List<Statement> statements = Lists.newArrayList();
 		for (Provisioning provisioning : node.getProvisioning()) {
-			provisioning.asTemplateOption().copyTo(options);
+			statements.add(provisioning.asStatement());
 		}
+		options.runScript(new StatementList(statements));
 		
 		templateBuilder
 			.minRam(node.getSize().getMinRam())

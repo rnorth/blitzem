@@ -2,6 +2,7 @@ package org.blitzem.model;
 
 import org.jclouds.compute.options.TemplateOptions;
 import org.jclouds.io.payloads.StringPayload;
+import org.jclouds.scriptbuilder.domain.Statement;
 
 import static org.jclouds.compute.options.TemplateOptions.Builder.*;
 
@@ -24,8 +25,8 @@ public class ScriptExecution extends Provisioning {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public TemplateOptions asTemplateOption() {
-		return runScript(new StringPayload(scriptAsString));
+	public Statement asStatement() {
+		return runScript(new StringPayload(scriptAsString)).getRunScript();
 	}
 
 }

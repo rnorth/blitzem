@@ -102,4 +102,18 @@ public class ExecutionContext {
 	public void close() {
 		driver.close();
 	}
+
+	/**
+	 * @return the cloudConfigProperties
+	 */
+	public Properties getCloudConfigProperties() {
+		return cloudConfigProperties;
+	}
+
+	/**
+	 * @return the cloudConfigFile
+	 */
+	public File getCloudConfigFile() {
+		return cloudConfigFile;
+	}
 }

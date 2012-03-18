@@ -43,6 +43,7 @@ public class BlitzemConsole {
 	private static final Logger CONSOLE_LOG = (Logger) LoggerFactory.getLogger(BlitzemConsole.class);
 	public static final Class<? extends Command>[] SUPPORTED_COMMANDS = new Class[] {UpCommand.class, DownCommand.class, StatusCommand.class};
 	public static ExecutionContext executionContext;
+	public static BaseCommand command;
 
 	/**
 	 * @param args
@@ -51,11 +52,7 @@ public class BlitzemConsole {
 	 */
 	public static void main(String[] args) throws Exception {
 
-		/*
-		 * Parse command line arguments into a Command object for subsequent
-		 * execution.
-		 */
-		BaseCommand command = (BaseCommand) new CommandArgsParser(SUPPORTED_COMMANDS).useDefault(
+		command = (BaseCommand) new CommandArgsParser(SUPPORTED_COMMANDS).useDefault(
 				HelpCommand.class).parse(args);
 
 		/*
@@ -98,7 +95,7 @@ public class BlitzemConsole {
 			}
 
 		} catch (RuntimeException e) {
-			CONSOLE_LOG.error("An unexpected error occurred: \n{}", e.getMessage());
+			CONSOLE_LOG.error("An unexpected error occurred: \n  {}\n  at {}", e, Throwables.getRootCause(e).getStackTrace()[0]);
 			// Have to call exit in case another thread is holding the app open (e.g. JClouds spawns some)
 			System.exit(1);
 		} finally {

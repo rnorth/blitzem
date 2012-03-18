@@ -1,6 +1,7 @@
 package org.blitzem.model;
 
 import org.jclouds.compute.options.TemplateOptions;
+import org.jclouds.scriptbuilder.domain.Statement;
 
 /**
  * Base class for provisioning steps to be carried out after server
@@ -16,6 +17,10 @@ public class Provisioning {
 	 *         what needs to be done to carry out this provisioning step.
 	 */
 	public TemplateOptions asTemplateOption() {
+		throw new UnsupportedOperationException();
+	}
+	
+	public Statement asStatement() {
 		throw new UnsupportedOperationException();
 	}
 
